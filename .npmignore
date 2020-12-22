@@ -8,4 +8,5 @@ src
 .npmignore
 .npmrc
 package-lock.json
+renovate.json
 tsconfig.json

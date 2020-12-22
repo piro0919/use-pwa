@@ -14,27 +14,23 @@ use-pwa is pop-up handler for pwa.
 
 ```tsx
 import usePwa from "hooks/usePwa";
-import { FC, useEffect } from "react";
+import { FC } from "react";
 
 const App: FC = () => {
-  const {
-    enabledPwa,
-    handleClickOnInstallPrompt,
-    installablePwa,
-    userChoice,
-  } = usePwa();
-
-  useEffect(() => {
-    console.log(userChoice);
-  }, [userChoice]);
+  const { enabledPwa, handleClickOnInstallPrompt, userChoice } = usePwa();
 
   return (
     <div>
-      {enabledPwa && installablePwa ? (
+      {enabledPwa ? (
         <button onClick={handleClickOnInstallPrompt}>click!</button>
       ) : (
         "Not compatible with pwa."
       )}
+      <div>
+        {`enabledPwa: ${enabledPwa}`}
+        <br />
+        {`userChoice: ${JSON.stringify(userChoice)}`}
+      </div>
     </div>
   );
 };

@@ -24,7 +24,6 @@ export type Pwa = {
   handleClickOnInstallPrompt: NonNullable<
     ComponentPropsWithoutRef<"button">["onClick"]
   >;
-  installablePwa: boolean;
   userChoice?: PromiseType<BeforeInstallPromptEvent["userChoice"]>;
 };
 
@@ -32,9 +31,6 @@ function usePwa(): Pwa {
   const beforeinstallprompt = useRef<BeforeInstallPromptEvent>();
   const [userChoice, setUserChoice] = useState<Pwa["userChoice"]>();
   const [enabledPwa, setEnabledPwa] = useState<Pwa["enabledPwa"]>(false);
-  const [installablePwa, setInstallablePwa] = useState<Pwa["installablePwa"]>(
-    false
-  );
   const handleClickOnInstallPrompt = useCallback<
     Pwa["handleClickOnInstallPrompt"]
   >(() => {
@@ -59,11 +55,6 @@ function usePwa(): Pwa {
     (event: BeforeInstallPromptEvent) => void
   >((event) => {
     beforeinstallprompt.current = event;
-
-    setInstallablePwa(true);
-  }, []);
-  const handleAppinstalled = useCallback(() => {
-    setInstallablePwa(false);
   }, []);
 
   useEffect(() => {
@@ -86,15 +77,7 @@ function usePwa(): Pwa {
     );
   }, []);
 
-  useEffect(() => {
-    window.addEventListener("appinstalled", handleAppinstalled);
-
-    return () => {
-      window.removeEventListener("appinstalled", handleAppinstalled);
-    };
-  }, [handleAppinstalled]);
-
-  return { enabledPwa, handleClickOnInstallPrompt, installablePwa, userChoice };
+  return { enabledPwa, handleClickOnInstallPrompt, userChoice };
 }
 
 export default usePwa;
