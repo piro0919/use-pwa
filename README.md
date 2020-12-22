@@ -1,3 +1,18 @@
+# use-pwa
+
+use-pwa is pop-up handler for pwa.
+
+## Features
+
+- TypeScript support
+
+## Installation
+
+`npm i --save use-pwa`
+
+## Usage
+
+```tsx
 import usePwa from "hooks/usePwa";
 import { FC, useEffect } from "react";
 
@@ -25,3 +40,4 @@ const App: FC = () => {
 };
 
 export default App;
+```

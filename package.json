@@ -1,16 +1,24 @@
 {
-  "name": "pwa-test",
-  "version": "0.1.0",
-  "private": true,
+  "author": "piro <piro.haniwa@gmail.com> (https://kk-web.link/)",
+  "browserslist": {
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ]
+  },
   "dependencies": {
-    "@testing-library/jest-dom": "^5.11.6",
-    "@testing-library/react": "^11.2.2",
-    "@testing-library/user-event": "^12.6.0",
-    "@types/jest": "^26.0.19",
+    "react": "^17.0.1"
+  },
+  "devDependencies": {
     "@types/node": "^12.19.9",
     "@types/react": "^16.14.2",
     "@types/react-dom": "^16.9.10",
-    "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.1",
     "typescript": "^4.1.3",
@@ -28,28 +36,28 @@
     "workbox-strategies": "^5.1.4",
     "workbox-streams": "^5.1.4"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
     ]
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+  "homepage": "https://kk-web.link/",
+  "keywords": [
+    "react",
+    "pwa",
+    "usePwa"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "name": "use-pwa",
+  "private": false,
+  "scripts": {
+    "build": "react-scripts build",
+    "build:package": "tsc -p tsconfig.gen-dts.json",
+    "start": "react-scripts start"
+  },
+  "types": "dist/index.d.ts",
+  "version": "0.2.0"
 }
