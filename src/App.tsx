@@ -2,7 +2,13 @@ import usePwa from "hooks/usePwa";
 import { FC } from "react";
 
 const App: FC = () => {
-  const { enabledPwa, handleClickOnInstallPrompt, userChoice } = usePwa();
+  const {
+    appinstalled,
+    enabledPwa,
+    handleClickOnInstallPrompt,
+    isPwa,
+    userChoice,
+  } = usePwa();
 
   return (
     <div>
@@ -12,7 +18,11 @@ const App: FC = () => {
         "Not compatible with pwa."
       )}
       <div>
+        {`appinstalled: ${appinstalled}`}
+        <br />
         {`enabledPwa: ${enabledPwa}`}
+        <br />
+        {`isPwa: ${isPwa}`}
         <br />
         {`userChoice: ${JSON.stringify(userChoice)}`}
       </div>

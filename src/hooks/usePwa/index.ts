@@ -20,10 +20,12 @@ type BeforeInstallPromptEvent = Event & {
 };
 
 export type Pwa = {
+  appinstalled: boolean;
   enabledPwa: boolean;
   handleClickOnInstallPrompt: NonNullable<
     ComponentPropsWithoutRef<"button">["onClick"]
   >;
+  isPwa: boolean;
   userChoice?: PromiseType<BeforeInstallPromptEvent["userChoice"]>;
 };
 
@@ -31,6 +33,7 @@ function usePwa(): Pwa {
   const beforeinstallprompt = useRef<BeforeInstallPromptEvent>();
   const [userChoice, setUserChoice] = useState<Pwa["userChoice"]>();
   const [enabledPwa, setEnabledPwa] = useState<Pwa["enabledPwa"]>(false);
+  const [isPwa, setIsPwa] = useState<Pwa["isPwa"]>(false);
   const handleClickOnInstallPrompt = useCallback<
     Pwa["handleClickOnInstallPrompt"]
   >(() => {
@@ -56,6 +59,10 @@ function usePwa(): Pwa {
   >((event) => {
     beforeinstallprompt.current = event;
   }, []);
+  const [appinstalled, setAppinstalled] = useState<Pwa["appinstalled"]>(false);
+  const handleAppinstalled = useCallback(() => {
+    setAppinstalled(true);
+  }, []);
 
   useEffect(() => {
     window.addEventListener(
@@ -72,12 +79,35 @@ function usePwa(): Pwa {
   }, [handleBeforeInstallPrompt]);
 
   useEffect(() => {
+    window.addEventListener("appinstalled", handleAppinstalled);
+
+    return () => {
+      window.removeEventListener("appinstalled", handleAppinstalled);
+    };
+  }, [handleAppinstalled]);
+
+  useEffect(() => {
     setEnabledPwa(
       "serviceWorker" in navigator && "BeforeInstallPromptEvent" in window
     );
   }, []);
 
-  return { enabledPwa, handleClickOnInstallPrompt, userChoice };
+  useEffect(() => {
+    console.log(window.matchMedia("(display-mode: standalone)"));
+
+    setIsPwa(
+      "standalone" in navigator ||
+        window.matchMedia("(display-mode: standalone)").matches
+    );
+  }, []);
+
+  return {
+    appinstalled,
+    enabledPwa,
+    handleClickOnInstallPrompt,
+    isPwa,
+    userChoice,
+  };
 }
 
 export default usePwa;
