@@ -93,8 +93,6 @@ function usePwa(): Pwa {
   }, []);
 
   useEffect(() => {
-    console.log(window.matchMedia("(display-mode: standalone)"));
-
     setIsPwa(
       "standalone" in navigator ||
         window.matchMedia("(display-mode: standalone)").matches
