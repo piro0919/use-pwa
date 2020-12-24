@@ -4,6 +4,7 @@ import { FC } from "react";
 const App: FC = () => {
   const {
     appinstalled,
+    canInstallprompt,
     enabledPwa,
     handleClickOnInstallPrompt,
     isPwa,
@@ -13,12 +14,19 @@ const App: FC = () => {
   return (
     <div>
       {enabledPwa ? (
-        <button onClick={handleClickOnInstallPrompt}>click!</button>
+        <button
+          disabled={!canInstallprompt}
+          onClick={handleClickOnInstallPrompt}
+        >
+          Install Pwa
+        </button>
       ) : (
         "Not compatible with pwa."
       )}
       <div>
         {`appinstalled: ${appinstalled}`}
+        <br />
+        {`canInstallprompt: ${canInstallprompt}`}
         <br />
         {`enabledPwa: ${enabledPwa}`}
         <br />

@@ -21,6 +21,7 @@ type BeforeInstallPromptEvent = Event & {
 
 export type Pwa = {
   appinstalled: boolean;
+  canInstallprompt: boolean;
   enabledPwa: boolean;
   handleClickOnInstallPrompt: NonNullable<
     ComponentPropsWithoutRef<"button">["onClick"]
@@ -34,6 +35,9 @@ function usePwa(): Pwa {
   const [userChoice, setUserChoice] = useState<Pwa["userChoice"]>();
   const [enabledPwa, setEnabledPwa] = useState<Pwa["enabledPwa"]>(false);
   const [isPwa, setIsPwa] = useState<Pwa["isPwa"]>(false);
+  const [canInstallprompt, setCanInstallprompt] = useState<
+    Pwa["canInstallprompt"]
+  >(false);
   const handleClickOnInstallPrompt = useCallback<
     Pwa["handleClickOnInstallPrompt"]
   >(() => {
@@ -58,6 +62,8 @@ function usePwa(): Pwa {
     (event: BeforeInstallPromptEvent) => void
   >((event) => {
     beforeinstallprompt.current = event;
+
+    setCanInstallprompt(true);
   }, []);
   const [appinstalled, setAppinstalled] = useState<Pwa["appinstalled"]>(false);
   const handleAppinstalled = useCallback(() => {
@@ -101,6 +107,7 @@ function usePwa(): Pwa {
 
   return {
     appinstalled,
+    canInstallprompt,
     enabledPwa,
     handleClickOnInstallPrompt,
     isPwa,
