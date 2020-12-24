@@ -20,6 +20,7 @@ const App: FC = () => {
   const {
     appinstalled,
     canInstallprompt,
+    enabledA2hs,
     enabledPwa,
     handleClickOnInstallPrompt,
     isPwa,
@@ -30,7 +31,7 @@ const App: FC = () => {
     <div>
       {enabledPwa ? (
         <button
-          disabled={!canInstallprompt}
+          disabled={!canInstallprompt || appinstalled}
           onClick={handleClickOnInstallPrompt}
         >
           Install Pwa
@@ -42,6 +43,8 @@ const App: FC = () => {
         {`appinstalled: ${appinstalled}`}
         <br />
         {`canInstallprompt: ${canInstallprompt}`}
+        <br />
+        {`enabledA2hs: ${enabledA2hs}`}
         <br />
         {`enabledPwa: ${enabledPwa}`}
         <br />
@@ -62,6 +65,7 @@ export default App;
 | -------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
 | appinstalled               | boolean                                                                        | [Window.onappinstalled](https://developer.mozilla.org/en-US/docs/Web/API/Window/onappinstalled)                                  |
 | canInstallprompt           | boolean                                                                        | [BeforeInstallPromptEvent](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)                            |
+| enabledA2hs                | boolean                                                                        | [Add to Home screen](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Add_to_home_screen)                       |
 | enabledPwa                 | boolean                                                                        | BeforeInstallPromptEvent and [Navigator.serviceWorker](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/serviceWorker) |
 | handleClickOnInstallPrompt | (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void               | -                                                                                                                                |
 | isPwa                      | boolean                                                                        | [display-mode](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode)                                             |

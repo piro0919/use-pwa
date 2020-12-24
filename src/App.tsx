@@ -5,6 +5,7 @@ const App: FC = () => {
   const {
     appinstalled,
     canInstallprompt,
+    enabledA2hs,
     enabledPwa,
     handleClickOnInstallPrompt,
     isPwa,
@@ -15,7 +16,7 @@ const App: FC = () => {
     <div>
       {enabledPwa ? (
         <button
-          disabled={!canInstallprompt}
+          disabled={!canInstallprompt || appinstalled}
           onClick={handleClickOnInstallPrompt}
         >
           Install Pwa
@@ -27,6 +28,8 @@ const App: FC = () => {
         {`appinstalled: ${appinstalled}`}
         <br />
         {`canInstallprompt: ${canInstallprompt}`}
+        <br />
+        {`enabledA2hs: ${enabledA2hs}`}
         <br />
         {`enabledPwa: ${enabledPwa}`}
         <br />

@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { detect } from "detect-browser";
 
 type PromiseType<T extends Promise<any>> = T extends Promise<infer P>
   ? P
@@ -22,6 +23,7 @@ type BeforeInstallPromptEvent = Event & {
 export type Pwa = {
   appinstalled: boolean;
   canInstallprompt: boolean;
+  enabledA2hs: boolean;
   enabledPwa: boolean;
   handleClickOnInstallPrompt: NonNullable<
     ComponentPropsWithoutRef<"button">["onClick"]
@@ -34,6 +36,7 @@ function usePwa(): Pwa {
   const beforeinstallprompt = useRef<BeforeInstallPromptEvent>();
   const [userChoice, setUserChoice] = useState<Pwa["userChoice"]>();
   const [enabledPwa, setEnabledPwa] = useState<Pwa["enabledPwa"]>(false);
+  const [enabledA2hs, setEnabledA2hs] = useState<Pwa["enabledA2hs"]>(false);
   const [isPwa, setIsPwa] = useState<Pwa["isPwa"]>(false);
   const [canInstallprompt, setCanInstallprompt] = useState<
     Pwa["canInstallprompt"]
@@ -94,20 +97,39 @@ function usePwa(): Pwa {
 
   useEffect(() => {
     setEnabledPwa(
-      "serviceWorker" in navigator && "BeforeInstallPromptEvent" in window
+      "serviceWorker" in window.navigator &&
+        "BeforeInstallPromptEvent" in window
     );
   }, []);
 
   useEffect(() => {
     setIsPwa(
-      "standalone" in navigator ||
+      "standalone" in window.navigator ||
         window.matchMedia("(display-mode: standalone)").matches
     );
+  }, []);
+
+  useEffect(() => {
+    const browser = detect();
+
+    if (!browser) {
+      return;
+    }
+
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIos =
+      userAgent.indexOf("iphone") >= 0 ||
+      userAgent.indexOf("ipad") >= 0 ||
+      (userAgent.indexOf("macintosh") >= 0 && "ontouchend" in document);
+    const { name } = browser;
+
+    setEnabledA2hs(isIos && name === "ios");
   }, []);
 
   return {
     appinstalled,
     canInstallprompt,
+    enabledA2hs,
     enabledPwa,
     handleClickOnInstallPrompt,
     isPwa,
