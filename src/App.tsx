@@ -24,6 +24,7 @@ const App: FC = () => {
       ) : (
         "Not compatible with pwa."
       )}
+      <hr />
       <div>
         {`appinstalled: ${appinstalled}`}
         <br />
