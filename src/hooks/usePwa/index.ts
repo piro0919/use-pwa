@@ -24,7 +24,7 @@ export type PwaData = {
   enabledA2hs: boolean;
   enabledPwa: boolean;
   handleClickOnInstallPrompt: () => void;
-  handleClickOnUnregister?: () => Promise<boolean>;
+  handleClickOnUnregister?: () => void;
   isPwa: boolean;
   onupdatefound: boolean;
   userChoice?: PromiseType<BeforeInstallPromptEvent["userChoice"]>;
@@ -143,11 +143,13 @@ function usePwa(pwaParams?: PwaParams): PwaData {
 
       const registration2 = await navigator.serviceWorker.getRegistration();
 
-      if (!registration2) {
-        return;
-      }
+      setHandleClickOnUnregister(async () => {
+        if (!registration2) {
+          return;
+        }
 
-      setHandleClickOnUnregister(() => registration2?.unregister());
+        await registration2.unregister();
+      });
     };
 
     callback();
