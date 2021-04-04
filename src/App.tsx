@@ -27,7 +27,7 @@ const App: FC = () => {
         "Not compatible with pwa."
       )}
       <br />
-      {handleClickOnUnregister && onupdatefound ? (
+      {onupdatefound ? (
         <button onClick={handleClickOnUnregister}>Update Pwa</button>
       ) : (
         "Update does not exist."

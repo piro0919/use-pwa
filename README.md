@@ -34,7 +34,7 @@ use-pwa is pop-up handler for pwa.
 | enabledA2hs                | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Add_to_home_screen)    |
 | enabledPwa                 | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)               |
 | handleClickOnInstallPrompt | Function |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent/prompt)        |
-| handleClickOnUnregister    | Function |    ✓     | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/getRegistration) |
+| handleClickOnUnregister    | Function |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/getRegistration) |
 | isPwa                      | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode)                    |
 | onupdatefound              | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register)        |
 | userChoice                 |  Object  |    ✓     | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)               |

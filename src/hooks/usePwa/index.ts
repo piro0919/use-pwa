@@ -24,7 +24,7 @@ export type PwaData = {
   enabledA2hs: boolean;
   enabledPwa: boolean;
   handleClickOnInstallPrompt: () => void;
-  handleClickOnUnregister?: () => void;
+  handleClickOnUnregister: () => void;
   isPwa: boolean;
   onupdatefound: boolean;
   userChoice?: PromiseType<BeforeInstallPromptEvent["userChoice"]>;
@@ -52,9 +52,19 @@ function usePwa(pwaParams?: PwaParams): PwaData {
 
     setUserChoice(userChoice);
   }, []);
-  const [handleClickOnUnregister, setHandleClickOnUnregister] = useState<
-    PwaData["handleClickOnUnregister"]
-  >();
+  const handleClickOnUnregister = useCallback(async () => {
+    if (!("serviceWorker" in window.navigator)) {
+      return;
+    }
+
+    const registration = await window.navigator.serviceWorker.getRegistration();
+
+    if (!registration) {
+      return;
+    }
+
+    await registration.unregister();
+  }, []);
   const [isPwa, setIsPwa] = useState(false);
   const [onupdatefound, setOnupdatefound] = useState(false);
   const handleBeforeInstallPrompt = useCallback<
@@ -130,7 +140,9 @@ function usePwa(pwaParams?: PwaParams): PwaData {
       }
 
       try {
-        const registration = await navigator.serviceWorker.register(scriptURL);
+        const registration = await window.navigator.serviceWorker.register(
+          scriptURL
+        );
 
         registration.onupdatefound = () => {
           registration.update();
@@ -140,16 +152,6 @@ function usePwa(pwaParams?: PwaParams): PwaData {
       } catch (error) {
         console.log("Registration failed with " + error);
       }
-
-      const registration2 = await navigator.serviceWorker.getRegistration();
-
-      setHandleClickOnUnregister(async () => {
-        if (!registration2) {
-          return;
-        }
-
-        await registration2.unregister();
-      });
     };
 
     callback();
