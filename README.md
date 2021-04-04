@@ -19,12 +19,6 @@ use-pwa is pop-up handler for pwa.
 
 [Example Code](https://github.com/piro0919/use-pwa/blob/master/src/App.tsx)
 
-## Arguments
-
-| Prop      |       Type        | Required | Remarks                                                                                 |
-| --------- | :---------------: | :------: | --------------------------------------------------------------------------------------- |
-| scriptURL | String &#124; URL |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register) |
-
 ## Return
 
 | Return            |   Type   | Optional | Remarks                                                                                     |
