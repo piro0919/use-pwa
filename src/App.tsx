@@ -7,12 +7,12 @@ const App: FC = () => {
     canInstallprompt,
     enabledA2hs,
     enabledPwa,
+    enabledUpdate,
     isPwa,
-    onupdatefound,
     showInstallPrompt,
     unregister,
     userChoice,
-  } = usePwa({ scriptURL: "/service-worker.js" });
+  } = usePwa();
   const handleClick = useCallback(async () => {
     const result = await unregister();
 
@@ -32,7 +32,7 @@ const App: FC = () => {
         "Not compatible with pwa."
       )}
       <br />
-      {isPwa && onupdatefound ? (
+      {enabledUpdate && isPwa ? (
         <button onClick={handleClick}>Update Pwa</button>
       ) : (
         "Update does not exist."
@@ -47,9 +47,9 @@ const App: FC = () => {
         <br />
         {`enabledPwa: ${enabledPwa}`}
         <br />
-        {`isPwa: ${isPwa}`}
+        {`enabledUpdate: ${enabledUpdate}`}
         <br />
-        {`onupdatefound: ${onupdatefound}`}
+        {`isPwa: ${isPwa}`}
         <br />
         {`userChoice: ${JSON.stringify(userChoice)}`}
       </div>

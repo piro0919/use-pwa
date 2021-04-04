@@ -14,30 +14,26 @@ type BeforeInstallPromptEvent = Event & {
   prompt(): Promise<void>;
 };
 
-export type PwaParams = {
-  scriptURL: string | URL;
-};
-
 export type PwaData = {
   appinstalled: boolean;
   canInstallprompt: boolean;
   enabledA2hs: boolean;
   enabledPwa: boolean;
+  enabledUpdate: boolean;
   isPwa: boolean;
-  onupdatefound: boolean;
   showInstallPrompt: () => void;
   unregister: () => Promise<boolean | undefined>;
   userChoice?: PromiseType<BeforeInstallPromptEvent["userChoice"]>;
 };
 
-function usePwa(pwaParams?: PwaParams): PwaData {
+function usePwa(): PwaData {
   const beforeinstallprompt = useRef<BeforeInstallPromptEvent>();
   const [appinstalled, setAppinstalled] = useState(false);
   const [canInstallprompt, setCanInstallprompt] = useState(false);
   const [enabledA2hs, setEnabledA2hs] = useState(false);
   const [enabledPwa, setEnabledPwa] = useState(false);
   const [isPwa, setIsPwa] = useState(false);
-  const [onupdatefound, setOnupdatefound] = useState(false);
+  const [enabledUpdate, setEnabledUpdate] = useState(false);
   const [userChoice, setUserChoice] = useState<PwaData["userChoice"]>();
   const showInstallPrompt = useCallback(async () => {
     if (!beforeinstallprompt.current) {
@@ -135,37 +131,33 @@ function usePwa(pwaParams?: PwaParams): PwaData {
 
   useEffect(() => {
     const callback = async () => {
-      const { scriptURL } = pwaParams || {};
-
-      if (!scriptURL || !("serviceWorker" in window.navigator)) {
+      if (!("serviceWorker" in window.navigator)) {
         return;
       }
 
-      try {
-        const registration = await window.navigator.serviceWorker.register(
-          scriptURL
-        );
+      const registration = await window.navigator.serviceWorker.getRegistration();
 
-        registration.onupdatefound = () => {
-          registration.update();
-
-          setOnupdatefound(true);
-        };
-      } catch (error) {
-        console.log("Registration failed with " + error);
+      if (!registration) {
+        return;
       }
+
+      registration.onupdatefound = async () => {
+        await registration.update();
+
+        setEnabledUpdate(true);
+      };
     };
 
     callback();
-  }, [pwaParams]);
+  }, []);
 
   return {
     appinstalled,
     canInstallprompt,
     enabledA2hs,
+    enabledUpdate,
     enabledPwa,
     isPwa,
-    onupdatefound,
     showInstallPrompt,
     unregister,
     userChoice,

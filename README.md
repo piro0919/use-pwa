@@ -27,14 +27,14 @@ use-pwa is pop-up handler for pwa.
 
 ## Return
 
-| Return            |   Type   | Optional | Remarks                                                                                        |
-| ----------------- | :------: | :------: | ---------------------------------------------------------------------------------------------- |
-| appinstalled      | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Window/appinstalled_event)              |
-| canInstallprompt  | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)               |
-| enabledA2hs       | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Add_to_home_screen)    |
-| enabledPwa        | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)               |
-| isPwa             | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode)                    |
-| onupdatefound     | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register)        |
-| showInstallPrompt | Function |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent/prompt)        |
-| unregister        | Function |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/getRegistration) |
-| userChoice        |  Object  |    ✓     | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)               |
+| Return            |   Type   | Optional | Remarks                                                                                     |
+| ----------------- | :------: | :------: | ------------------------------------------------------------------------------------------- |
+| appinstalled      | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Window/appinstalled_event)           |
+| canInstallprompt  | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)            |
+| enabledA2hs       | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Add_to_home_screen) |
+| enabledPwa        | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)            |
+| enabledUpdate     | Boolean  |          | [MDN](https://developer.mozilla.org/ja/docs/Web/API/ServiceWorkerRegistration/update)       |
+| isPwa             | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode)                 |
+| showInstallPrompt | Function |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent/prompt)     |
+| unregister        | Function |          | [MDN](https://developer.mozilla.org/ja/docs/Web/API/ServiceWorkerRegistration/unregister)   |
+| userChoice        |  Object  |    ✓     | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)            |
