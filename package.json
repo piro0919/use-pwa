@@ -71,5 +71,5 @@
     "start": "react-scripts start"
   },
   "types": "dist/index.d.ts",
-  "version": "0.4.1"
+  "version": "0.4.2"
 }

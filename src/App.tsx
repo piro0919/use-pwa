@@ -1,5 +1,5 @@
 import usePwa from "hooks/usePwa";
-import { FC } from "react";
+import { FC, useCallback } from "react";
 
 const App: FC = () => {
   const {
@@ -7,19 +7,24 @@ const App: FC = () => {
     canInstallprompt,
     enabledA2hs,
     enabledPwa,
-    handleClickOnInstallPrompt,
-    handleClickOnUnregister,
     isPwa,
     onupdatefound,
+    showInstallPrompt,
+    unregister,
     userChoice,
   } = usePwa({ scriptURL: "/service-worker.js" });
+  const handleClick = useCallback(async () => {
+    const result = await unregister();
+
+    alert(String(result));
+  }, [unregister]);
 
   return (
     <div>
       {enabledPwa ? (
         <button
           disabled={!canInstallprompt || appinstalled}
-          onClick={handleClickOnInstallPrompt}
+          onClick={showInstallPrompt}
         >
           Install Pwa
         </button>
@@ -27,8 +32,8 @@ const App: FC = () => {
         "Not compatible with pwa."
       )}
       <br />
-      {onupdatefound ? (
-        <button onClick={handleClickOnUnregister}>Update Pwa</button>
+      {isPwa && onupdatefound ? (
+        <button onClick={handleClick}>Update Pwa</button>
       ) : (
         "Update does not exist."
       )}

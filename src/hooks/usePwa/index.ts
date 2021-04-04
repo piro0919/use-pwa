@@ -23,10 +23,10 @@ export type PwaData = {
   canInstallprompt: boolean;
   enabledA2hs: boolean;
   enabledPwa: boolean;
-  handleClickOnInstallPrompt: () => void;
-  handleClickOnUnregister: () => void;
   isPwa: boolean;
   onupdatefound: boolean;
+  showInstallPrompt: () => void;
+  unregister: () => Promise<boolean | undefined>;
   userChoice?: PromiseType<BeforeInstallPromptEvent["userChoice"]>;
 };
 
@@ -36,8 +36,10 @@ function usePwa(pwaParams?: PwaParams): PwaData {
   const [canInstallprompt, setCanInstallprompt] = useState(false);
   const [enabledA2hs, setEnabledA2hs] = useState(false);
   const [enabledPwa, setEnabledPwa] = useState(false);
+  const [isPwa, setIsPwa] = useState(false);
+  const [onupdatefound, setOnupdatefound] = useState(false);
   const [userChoice, setUserChoice] = useState<PwaData["userChoice"]>();
-  const handleClickOnInstallPrompt = useCallback(async () => {
+  const showInstallPrompt = useCallback(async () => {
     if (!beforeinstallprompt.current) {
       return;
     }
@@ -52,7 +54,7 @@ function usePwa(pwaParams?: PwaParams): PwaData {
 
     setUserChoice(userChoice);
   }, []);
-  const handleClickOnUnregister = useCallback(async () => {
+  const unregister = useCallback(async () => {
     if (!("serviceWorker" in window.navigator)) {
       return;
     }
@@ -63,10 +65,10 @@ function usePwa(pwaParams?: PwaParams): PwaData {
       return;
     }
 
-    await registration.unregister();
+    const result = await registration.unregister();
+
+    return result;
   }, []);
-  const [isPwa, setIsPwa] = useState(false);
-  const [onupdatefound, setOnupdatefound] = useState(false);
   const handleBeforeInstallPrompt = useCallback<
     (event: BeforeInstallPromptEvent) => void
   >((event) => {
@@ -162,10 +164,10 @@ function usePwa(pwaParams?: PwaParams): PwaData {
     canInstallprompt,
     enabledA2hs,
     enabledPwa,
-    handleClickOnInstallPrompt,
-    handleClickOnUnregister,
     isPwa,
     onupdatefound,
+    showInstallPrompt,
+    unregister,
     userChoice,
   };
 }
