@@ -1,10 +1,4 @@
-import {
-  ComponentPropsWithoutRef,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { detect } from "detect-browser";
 
 type PromiseType<T extends Promise<any>> = T extends Promise<infer P>
@@ -20,47 +14,49 @@ type BeforeInstallPromptEvent = Event & {
   prompt(): Promise<void>;
 };
 
-export type Pwa = {
+export type PwaParams = {
+  scriptURL: string | URL;
+};
+
+export type PwaData = {
   appinstalled: boolean;
   canInstallprompt: boolean;
   enabledA2hs: boolean;
   enabledPwa: boolean;
-  handleClickOnInstallPrompt: NonNullable<
-    ComponentPropsWithoutRef<"button">["onClick"]
-  >;
+  handleClickOnInstallPrompt: () => void;
+  handleClickOnUnregister?: () => Promise<boolean>;
   isPwa: boolean;
+  onupdatefound: boolean;
   userChoice?: PromiseType<BeforeInstallPromptEvent["userChoice"]>;
 };
 
-function usePwa(): Pwa {
+function usePwa(pwaParams?: PwaParams): PwaData {
   const beforeinstallprompt = useRef<BeforeInstallPromptEvent>();
-  const [userChoice, setUserChoice] = useState<Pwa["userChoice"]>();
-  const [enabledPwa, setEnabledPwa] = useState<Pwa["enabledPwa"]>(false);
-  const [enabledA2hs, setEnabledA2hs] = useState<Pwa["enabledA2hs"]>(false);
-  const [isPwa, setIsPwa] = useState<Pwa["isPwa"]>(false);
-  const [canInstallprompt, setCanInstallprompt] = useState<
-    Pwa["canInstallprompt"]
-  >(false);
-  const handleClickOnInstallPrompt = useCallback<
-    Pwa["handleClickOnInstallPrompt"]
-  >(() => {
+  const [appinstalled, setAppinstalled] = useState(false);
+  const [canInstallprompt, setCanInstallprompt] = useState(false);
+  const [enabledA2hs, setEnabledA2hs] = useState(false);
+  const [enabledPwa, setEnabledPwa] = useState(false);
+  const [userChoice, setUserChoice] = useState<PwaData["userChoice"]>();
+  const handleClickOnInstallPrompt = useCallback(async () => {
     if (!beforeinstallprompt.current) {
       return;
     }
 
-    beforeinstallprompt.current
-      .prompt()
-      .then(() => {
-        if (!beforeinstallprompt.current) {
-          return;
-        }
+    await beforeinstallprompt.current.prompt();
 
-        return beforeinstallprompt.current.userChoice;
-      })
-      .then((userChoice) => {
-        setUserChoice(userChoice);
-      });
+    if (!beforeinstallprompt.current) {
+      return;
+    }
+
+    const userChoice = await beforeinstallprompt.current.userChoice;
+
+    setUserChoice(userChoice);
   }, []);
+  const [handleClickOnUnregister, setHandleClickOnUnregister] = useState<
+    PwaData["handleClickOnUnregister"]
+  >();
+  const [isPwa, setIsPwa] = useState(false);
+  const [onupdatefound, setOnupdatefound] = useState(false);
   const handleBeforeInstallPrompt = useCallback<
     (event: BeforeInstallPromptEvent) => void
   >((event) => {
@@ -68,7 +64,6 @@ function usePwa(): Pwa {
 
     setCanInstallprompt(true);
   }, []);
-  const [appinstalled, setAppinstalled] = useState<Pwa["appinstalled"]>(false);
   const handleAppinstalled = useCallback(() => {
     setAppinstalled(true);
   }, []);
@@ -126,13 +121,47 @@ function usePwa(): Pwa {
     setEnabledA2hs(isIos && name === "ios");
   }, []);
 
+  useEffect(() => {
+    const callback = async () => {
+      const { scriptURL } = pwaParams || {};
+
+      if (!scriptURL || !("serviceWorker" in window.navigator)) {
+        return;
+      }
+
+      try {
+        const registration = await navigator.serviceWorker.register(scriptURL);
+
+        registration.onupdatefound = () => {
+          registration.update();
+
+          setOnupdatefound(true);
+        };
+      } catch (error) {
+        console.log("Registration failed with " + error);
+      }
+
+      const registration2 = await navigator.serviceWorker.getRegistration();
+
+      if (!registration2) {
+        return;
+      }
+
+      setHandleClickOnUnregister(() => registration2?.unregister());
+    };
+
+    callback();
+  }, [pwaParams]);
+
   return {
     appinstalled,
     canInstallprompt,
     enabledA2hs,
     enabledPwa,
     handleClickOnInstallPrompt,
+    handleClickOnUnregister,
     isPwa,
+    onupdatefound,
     userChoice,
   };
 }

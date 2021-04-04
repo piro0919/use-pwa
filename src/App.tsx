@@ -8,9 +8,11 @@ const App: FC = () => {
     enabledA2hs,
     enabledPwa,
     handleClickOnInstallPrompt,
+    handleClickOnUnregister,
     isPwa,
+    onupdatefound,
     userChoice,
-  } = usePwa();
+  } = usePwa({ scriptURL: "/service-worker.js" });
 
   return (
     <div>
@@ -24,6 +26,12 @@ const App: FC = () => {
       ) : (
         "Not compatible with pwa."
       )}
+      <br />
+      {handleClickOnUnregister && onupdatefound ? (
+        <button onClick={handleClickOnUnregister}>Update Pwa</button>
+      ) : (
+        "Update does not exist."
+      )}
       <hr />
       <div>
         {`appinstalled: ${appinstalled}`}
@@ -35,6 +43,8 @@ const App: FC = () => {
         {`enabledPwa: ${enabledPwa}`}
         <br />
         {`isPwa: ${isPwa}`}
+        <br />
+        {`onupdatefound: ${onupdatefound}`}
         <br />
         {`userChoice: ${JSON.stringify(userChoice)}`}
       </div>

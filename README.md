@@ -11,63 +11,30 @@ use-pwa is pop-up handler for pwa.
 
 `npm i --save use-pwa`
 
+## Example
+
+[Example](https://use-pwa.kk-web.link/)
+
 ## Usage
 
-```tsx
-import usePwa from "hooks/usePwa";
-import { FC } from "react";
+[Example Code](https://github.com/piro0919/use-pwa/blob/master/src/App.tsx)
 
-const App: FC = () => {
-  const {
-    appinstalled,
-    canInstallprompt,
-    enabledA2hs,
-    enabledPwa,
-    handleClickOnInstallPrompt,
-    isPwa,
-    userChoice,
-  } = usePwa();
+## Arguments
 
-  return (
-    <div>
-      {enabledPwa ? (
-        <button
-          disabled={!canInstallprompt || appinstalled}
-          onClick={handleClickOnInstallPrompt}
-        >
-          Install Pwa
-        </button>
-      ) : (
-        "Not compatible with pwa."
-      )}
-      <div>
-        {`appinstalled: ${appinstalled}`}
-        <br />
-        {`canInstallprompt: ${canInstallprompt}`}
-        <br />
-        {`enabledA2hs: ${enabledA2hs}`}
-        <br />
-        {`enabledPwa: ${enabledPwa}`}
-        <br />
-        {`isPwa: ${isPwa}`}
-        <br />
-        {`userChoice: ${JSON.stringify(userChoice)}`}
-      </div>
-    </div>
-  );
-};
-
-export default App;
-```
+| Prop      |       Type        | Required | Remarks                                                                                 |
+| --------- | :---------------: | :------: | --------------------------------------------------------------------------------------- |
+| scriptURL | String &#124; URL |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register) |
 
 ## Return
 
-| Key                        | Type                                                                           | Description                                                                                                                      |
-| -------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
-| appinstalled               | boolean                                                                        | [Window.onappinstalled](https://developer.mozilla.org/en-US/docs/Web/API/Window/onappinstalled)                                  |
-| canInstallprompt           | boolean                                                                        | [BeforeInstallPromptEvent](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)                            |
-| enabledA2hs                | boolean                                                                        | [Add to Home screen](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Add_to_home_screen)                       |
-| enabledPwa                 | boolean                                                                        | BeforeInstallPromptEvent and [Navigator.serviceWorker](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/serviceWorker) |
-| handleClickOnInstallPrompt | (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void               | -                                                                                                                                |
-| isPwa                      | boolean                                                                        | [display-mode](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode)                                             |
-| userChoice                 | { outcome: "accepted" &#124; "dismissed"; platform: string; } &#124; undefined | [BeforeInstallPromptEvent Properties](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent#Properties)      |
+| Return                     |   Type   | Optional | Remarks                                                                                        |
+| -------------------------- | :------: | :------: | ---------------------------------------------------------------------------------------------- |
+| appinstalled               | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Window/appinstalled_event)              |
+| canInstallprompt           | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)               |
+| enabledA2hs                | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Add_to_home_screen)    |
+| enabledPwa                 | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)               |
+| handleClickOnInstallPrompt | Function |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent/prompt)        |
+| handleClickOnUnregister    | Function |    ✓     | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/getRegistration) |
+| isPwa                      | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode)                    |
+| onupdatefound              | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register)        |
+| userChoice                 |  Object  |    ✓     | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)               |
