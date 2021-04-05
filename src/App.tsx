@@ -21,7 +21,7 @@ const App: FC = () => {
 
   return (
     <div>
-      {enabledPwa ? (
+      {enabledPwa && !isPwa ? (
         <button
           disabled={!canInstallprompt || appinstalled}
           onClick={showInstallPrompt}
