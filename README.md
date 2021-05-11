@@ -6,6 +6,7 @@ use-pwa is pop-up handler for pwa.
 
 - TypeScript support
 - SSR support
+- Update support
 
 ## Installation
 

@@ -16,7 +16,15 @@ const App: FC = () => {
   const handleClick = useCallback(async () => {
     const result = await unregister();
 
-    alert(String(result));
+    if (result) {
+      alert("The update was successful, restart the app.");
+
+      window.location.reload();
+
+      return;
+    }
+
+    alert("Update failed.");
   }, [unregister]);
 
   return (
