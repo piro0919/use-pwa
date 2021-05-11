@@ -1,6 +1,6 @@
 # use-pwa
 
-use-pwa is pop-up handler for pwa.
+use-pwa is install and update handler for pwa.
 
 ## Features
 
