@@ -8,6 +8,7 @@ const App: FC = () => {
     enabledA2hs,
     enabledPwa,
     enabledUpdate,
+    isLoading,
     isPwa,
     showInstallPrompt,
     unregister,
@@ -56,6 +57,8 @@ const App: FC = () => {
         {`enabledPwa: ${enabledPwa}`}
         <br />
         {`enabledUpdate: ${enabledUpdate}`}
+        <br />
+        {`isLoading: ${isLoading}`}
         <br />
         {`isPwa: ${isPwa}`}
         <br />
