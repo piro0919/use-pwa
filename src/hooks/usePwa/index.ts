@@ -86,9 +86,11 @@ export default function usePwa(): PwaData {
     isPwa: false,
   });
   const isLoading = useMemo(
-    () => !Object.values(completed).includes(false),
+    () => Object.values(completed).includes(false),
     [completed]
   );
+
+  console.log(completed);
 
   useEffect(() => {
     window.addEventListener("appinstalled", handleAppinstalled);
