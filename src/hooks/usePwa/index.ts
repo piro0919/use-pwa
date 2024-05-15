@@ -1,4 +1,3 @@
-import { detect } from "detect-browser";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 function useBoolean(initialValue: boolean) {
@@ -65,15 +64,13 @@ export default function usePwa(): PwaData {
       return result;
     });
   const showInstallPrompt = useCallback(async () => {
-    const { current } = beforeinstallprompt;
-
-    if (!current) {
+    if (!beforeinstallprompt.current) {
       return;
     }
 
-    await current.prompt();
+    await beforeinstallprompt.current.prompt();
 
-    const userChoice = await current.userChoice;
+    const userChoice = await beforeinstallprompt.current.userChoice;
 
     setUserChoice(userChoice);
   }, []);
@@ -120,27 +117,11 @@ export default function usePwa(): PwaData {
 
   useEffect(() => {
     try {
-      const browser = detect();
+      const lownerUserAgent = window.navigator.userAgent.toLowerCase();
 
-      if (!browser) {
-        return;
-      }
-
-      const { name } = browser;
-
-      if (name !== "ios") {
-        return;
-      }
-
-      const {
-        document,
-        navigator: { userAgent },
-      } = window;
-      const lownerUserAgent = userAgent.toLowerCase();
       if (
         !lownerUserAgent.includes("iphone") &&
-        !lownerUserAgent.includes("ipad") &&
-        (!lownerUserAgent.includes("macintosh") || !("ontouchend" in document))
+        !lownerUserAgent.includes("ipad")
       ) {
         return;
       }
@@ -178,10 +159,8 @@ export default function usePwa(): PwaData {
         return;
       }
 
-      const {
-        navigator: { serviceWorker },
-      } = window;
-      const registration = await serviceWorker.getRegistration();
+      const registration =
+        await window.navigator.serviceWorker.getRegistration();
 
       setRegistration(registration);
     };
@@ -214,26 +193,27 @@ export default function usePwa(): PwaData {
 
   useEffect(() => {
     try {
-      const {
-        document: { referrer },
-        navigator,
-      } = window;
-      const { userAgent } = navigator;
-      const lownerUserAgent = userAgent.toLowerCase();
-      const isPwa =
-        // iOS PWA Standalone
-        ((lownerUserAgent.includes("iphone") ||
-          lownerUserAgent.includes("ipad")) &&
-          "standalone" in navigator) ||
-        // Android Trusted Web App
-        referrer.includes("android-app://") ||
-        // Chrome PWA (supporting fullscreen, standalone, minimal-ui)
+      // Android Trusted Web App
+      if (window.document.referrer.includes("android-app://")) {
+        onIsPwa();
+
+        return;
+      }
+
+      // Chrome PWA (supporting fullscreen, standalone, minimal-ui)
+      if (
         ["fullscreen", "standalone", "minimal-ui"].some(
           (displayMode) =>
             window.matchMedia("(display-mode: " + displayMode + ")").matches
-        );
+        )
+      ) {
+        onIsPwa();
 
-      if (!isPwa) {
+        return;
+      }
+
+      // NOT iOS PWA Standalone
+      if (!("standalone" in window.navigator) || !window.navigator.standalone) {
         return;
       }
 
