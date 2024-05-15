@@ -32,5 +32,5 @@ use-pwa is install and update handler for pwa.
 | isLoading         | Boolean  |          |                                                                                             |
 | isPwa             | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode)                 |
 | showInstallPrompt | Function |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent/prompt)     |
-| unregister        | Function |          | [MDN](https://developer.mozilla.org/ja/docs/Web/API/ServiceWorkerRegistration/unregister)   |
+| unregister        | Function |    ✓     | [MDN](https://developer.mozilla.org/ja/docs/Web/API/ServiceWorkerRegistration/unregister)   |
 | userChoice        |  Object  |    ✓     | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)            |

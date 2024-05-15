@@ -1,16 +1,21 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { detect } from "detect-browser";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-type PromiseType<T extends Promise<any>> = T extends Promise<infer P>
-  ? P
-  : never;
+function useBoolean(initialValue: boolean) {
+  const [value, setValue] = useState(initialValue);
+  const setTrue = useCallback(() => setValue(true), []);
+
+  return { value, setTrue };
+}
+
+type UserChoice = {
+  outcome: "accepted" | "dismissed";
+  platform: string;
+};
 
 type BeforeInstallPromptEvent = Event & {
   readonly platforms: Array<string>;
-  readonly userChoice: Promise<{
-    outcome: "accepted" | "dismissed";
-    platform: string;
-  }>;
+  readonly userChoice: Promise<UserChoice>;
   prompt(): Promise<void>;
 };
 
@@ -23,58 +28,54 @@ export type PwaData = {
   isLoading: boolean;
   isPwa: boolean;
   showInstallPrompt: () => void;
-  unregister: () => Promise<boolean | undefined>;
-  userChoice?: PromiseType<BeforeInstallPromptEvent["userChoice"]>;
+  unregister?: () => Promise<boolean>;
+  userChoice?: UserChoice;
 };
 
-function usePwa(): PwaData {
+export default function usePwa(): PwaData {
   const beforeinstallprompt = useRef<BeforeInstallPromptEvent>();
-  const [appinstalled, setAppinstalled] = useState(false);
-  const [canInstallprompt, setCanInstallprompt] = useState(false);
-  const [enabledA2hs, setEnabledA2hs] = useState(false);
-  const [enabledPwa, setEnabledPwa] = useState(false);
-  const [isPwa, setIsPwa] = useState(false);
-  const [enabledUpdate, setEnabledUpdate] = useState(false);
-  const [userChoice, setUserChoice] = useState<PwaData["userChoice"]>();
+  const { value: appinstalled, setTrue: onAppinstalled } = useBoolean(false);
+  const { value: canInstallprompt, setTrue: onCanInstallprompt } =
+    useBoolean(false);
+  const { value: enabledA2hs, setTrue: onEnabledA2hs } = useBoolean(false);
+  const { value: enabledPwa, setTrue: onEnabledPwa } = useBoolean(false);
+  const { value: enabledUpdate, setTrue: onEnabledUpdate } = useBoolean(false);
+  const { value: isPwa, setTrue: onIsPwa } = useBoolean(false);
+  const [userChoice, setUserChoice] = useState<UserChoice>();
+  const handleAppinstalled = useCallback(
+    () => onAppinstalled(),
+    [onAppinstalled]
+  );
+  const handleBeforeinstallprompt = useCallback<
+    (event: BeforeInstallPromptEvent) => void
+  >(
+    (event) => {
+      beforeinstallprompt.current = event;
+
+      onCanInstallprompt();
+    },
+    [onCanInstallprompt]
+  );
+  const [registration, setRegistration] = useState<ServiceWorkerRegistration>();
+  const unregister =
+    registration &&
+    (async () => {
+      const result = await registration.unregister();
+
+      return result;
+    });
   const showInstallPrompt = useCallback(async () => {
-    if (!beforeinstallprompt.current) {
+    const { current } = beforeinstallprompt;
+
+    if (!current) {
       return;
     }
 
-    await beforeinstallprompt.current.prompt();
+    await current.prompt();
 
-    if (!beforeinstallprompt.current) {
-      return;
-    }
-
-    const userChoice = await beforeinstallprompt.current.userChoice;
+    const userChoice = await current.userChoice;
 
     setUserChoice(userChoice);
-  }, []);
-  const unregister = useCallback(async () => {
-    if (!("serviceWorker" in window.navigator)) {
-      return;
-    }
-
-    const registration = await window.navigator.serviceWorker.getRegistration();
-
-    if (!registration) {
-      return;
-    }
-
-    const result = await registration.unregister();
-
-    return result;
-  }, []);
-  const handleBeforeInstallPrompt = useCallback<
-    (event: BeforeInstallPromptEvent) => void
-  >((event) => {
-    beforeinstallprompt.current = event;
-
-    setCanInstallprompt(true);
-  }, []);
-  const handleAppinstalled = useCallback(() => {
-    setAppinstalled(true);
   }, []);
   const [completed, setCompleted] = useState({
     appinstalled: false,
@@ -85,28 +86,9 @@ function usePwa(): PwaData {
     isPwa: false,
   });
   const isLoading = useMemo(
-    () => !Object.values(completed).filter((value) => value).length,
+    () => !Object.values(completed).includes(false),
     [completed]
   );
-
-  useEffect(() => {
-    window.addEventListener(
-      "beforeinstallprompt",
-      handleBeforeInstallPrompt as any
-    );
-
-    setCompleted((prevCompleted) => ({
-      ...prevCompleted,
-      beforeinstallprompt: true,
-    }));
-
-    return () => {
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt as any
-      );
-    };
-  }, [handleBeforeInstallPrompt]);
 
   useEffect(() => {
     window.addEventListener("appinstalled", handleAppinstalled);
@@ -116,34 +98,25 @@ function usePwa(): PwaData {
       appinstalled: true,
     }));
 
-    return () => {
-      window.removeEventListener("appinstalled", handleAppinstalled);
-    };
+    return () => window.removeEventListener("keydown", handleAppinstalled);
   }, [handleAppinstalled]);
 
   useEffect(() => {
-    setEnabledPwa(
-      "serviceWorker" in window.navigator &&
-        "BeforeInstallPromptEvent" in window
-    );
+    // @ts-ignore
+    window.addEventListener("beforeinstallprompt", handleBeforeinstallprompt);
 
     setCompleted((prevCompleted) => ({
       ...prevCompleted,
-      enabledPwa: true,
+      beforeinstallprompt: true,
     }));
-  }, []);
 
-  useEffect(() => {
-    setIsPwa(
-      "standalone" in window.navigator ||
-        window.matchMedia("(display-mode: standalone)").matches
-    );
-
-    setCompleted((prevCompleted) => ({
-      ...prevCompleted,
-      isPwa: true,
-    }));
-  }, []);
+    return () =>
+      // @ts-ignore
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeinstallprompt
+      );
+  }, [handleBeforeinstallprompt]);
 
   useEffect(() => {
     try {
@@ -153,32 +126,72 @@ function usePwa(): PwaData {
         return;
       }
 
-      const userAgent = window.navigator.userAgent.toLowerCase();
-      const isIos =
-        userAgent.indexOf("iphone") >= 0 ||
-        userAgent.indexOf("ipad") >= 0 ||
-        (userAgent.indexOf("macintosh") >= 0 && "ontouchend" in document);
       const { name } = browser;
 
-      setEnabledA2hs(isIos && name === "ios");
+      if (name !== "ios") {
+        return;
+      }
+
+      const {
+        document,
+        navigator: { userAgent },
+      } = window;
+      const lownerUserAgent = userAgent.toLowerCase();
+      if (
+        !lownerUserAgent.includes("iphone") &&
+        !lownerUserAgent.includes("ipad") &&
+        (!lownerUserAgent.includes("macintosh") || !("ontouchend" in document))
+      ) {
+        return;
+      }
+
+      onEnabledA2hs();
     } finally {
       setCompleted((prevCompleted) => ({
         ...prevCompleted,
         enabledA2hs: true,
       }));
     }
+  }, [onEnabledA2hs]);
+
+  useEffect(() => {
+    try {
+      if (
+        !("serviceWorker" in window.navigator) ||
+        !("BeforeInstallPromptEvent" in window)
+      ) {
+        return;
+      }
+
+      onEnabledPwa();
+    } finally {
+      setCompleted((prevCompleted) => ({
+        ...prevCompleted,
+        enabledPwa: true,
+      }));
+    }
+  }, [onEnabledPwa]);
+
+  useEffect(() => {
+    const callback = async () => {
+      if (!("serviceWorker" in window.navigator)) {
+        return;
+      }
+
+      const {
+        navigator: { serviceWorker },
+      } = window;
+      const registration = await serviceWorker.getRegistration();
+
+      setRegistration(registration);
+    };
+
+    callback();
   }, []);
 
   useEffect(() => {
     const callback = async () => {
       try {
-        if (!("serviceWorker" in window.navigator)) {
-          return;
-        }
-
-        const registration =
-          await window.navigator.serviceWorker.getRegistration();
-
         if (!registration) {
           return;
         }
@@ -186,7 +199,7 @@ function usePwa(): PwaData {
         registration.onupdatefound = async () => {
           await registration.update();
 
-          setEnabledUpdate(true);
+          onEnabledUpdate();
         };
       } finally {
         setCompleted((prevCompleted) => ({
@@ -197,20 +210,36 @@ function usePwa(): PwaData {
     };
 
     callback();
-  }, []);
+  }, [onEnabledUpdate, registration]);
+
+  useEffect(() => {
+    try {
+      if (
+        !("standalone" in window.navigator) &&
+        !window.matchMedia("(display-mode: standalone)").matches
+      ) {
+        return;
+      }
+
+      onIsPwa();
+    } finally {
+      setCompleted((prevCompleted) => ({
+        ...prevCompleted,
+        isPwa: true,
+      }));
+    }
+  }, [onIsPwa]);
 
   return {
     appinstalled,
     canInstallprompt,
     enabledA2hs,
-    enabledUpdate,
     enabledPwa,
+    enabledUpdate,
     isLoading,
     isPwa,
-    showInstallPrompt,
     unregister,
+    showInstallPrompt,
     userChoice,
   };
 }
-
-export default usePwa;

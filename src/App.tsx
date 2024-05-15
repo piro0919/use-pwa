@@ -15,17 +15,21 @@ const App: FC = () => {
     userChoice,
   } = usePwa();
   const handleClick = useCallback(async () => {
+    if (!unregister) {
+      return;
+    }
+
     const result = await unregister();
 
-    if (result) {
-      alert("The update was successful, restart the app.");
-
-      window.location.reload();
+    if (!result) {
+      alert("Update failed.");
 
       return;
     }
 
-    alert("Update failed.");
+    alert("The update was successful, restart the app.");
+
+    window.location.reload();
   }, [unregister]);
 
   return (
