@@ -90,8 +90,6 @@ export default function usePwa(): PwaData {
     [completed]
   );
 
-  console.log(completed);
-
   useEffect(() => {
     window.addEventListener("appinstalled", handleAppinstalled);
 
@@ -100,7 +98,7 @@ export default function usePwa(): PwaData {
       appinstalled: true,
     }));
 
-    return () => window.removeEventListener("keydown", handleAppinstalled);
+    return () => window.removeEventListener("appinstalled", handleAppinstalled);
   }, [handleAppinstalled]);
 
   useEffect(() => {
