@@ -23,11 +23,9 @@ export type PwaData = {
   canInstallprompt: boolean;
   enabledA2hs: boolean;
   enabledPwa: boolean;
-  enabledUpdate: boolean;
   isLoading: boolean;
   isPwa: boolean;
   showInstallPrompt: () => void;
-  unregister?: () => Promise<boolean>;
   userChoice?: UserChoice;
 };
 
@@ -38,7 +36,6 @@ export default function usePwa(): PwaData {
     useBoolean(false);
   const { value: enabledA2hs, setTrue: onEnabledA2hs } = useBoolean(false);
   const { value: enabledPwa, setTrue: onEnabledPwa } = useBoolean(false);
-  const { value: enabledUpdate, setTrue: onEnabledUpdate } = useBoolean(false);
   const { value: isPwa, setTrue: onIsPwa } = useBoolean(false);
   const [userChoice, setUserChoice] = useState<UserChoice>();
   const handleAppinstalled = useCallback(
@@ -55,14 +52,6 @@ export default function usePwa(): PwaData {
     },
     [onCanInstallprompt]
   );
-  const [registration, setRegistration] = useState<ServiceWorkerRegistration>();
-  const unregister =
-    registration &&
-    (async () => {
-      const result = await registration.unregister();
-
-      return result;
-    });
   const showInstallPrompt = useCallback(async () => {
     if (!beforeinstallprompt.current) {
       return;
@@ -79,7 +68,6 @@ export default function usePwa(): PwaData {
     beforeinstallprompt: false,
     enabledA2hs: false,
     enabledPwa: false,
-    enabledUpdate: false,
     isPwa: false,
   });
   const isLoading = useMemo(
@@ -137,10 +125,7 @@ export default function usePwa(): PwaData {
 
   useEffect(() => {
     try {
-      if (
-        !("serviceWorker" in window.navigator) ||
-        !("BeforeInstallPromptEvent" in window)
-      ) {
+      if (!("BeforeInstallPromptEvent" in window)) {
         return;
       }
 
@@ -152,44 +137,6 @@ export default function usePwa(): PwaData {
       }));
     }
   }, [onEnabledPwa]);
-
-  useEffect(() => {
-    const callback = async () => {
-      if (!("serviceWorker" in window.navigator)) {
-        return;
-      }
-
-      const registration =
-        await window.navigator.serviceWorker.getRegistration();
-
-      setRegistration(registration);
-    };
-
-    callback();
-  }, []);
-
-  useEffect(() => {
-    const callback = async () => {
-      try {
-        if (!registration) {
-          return;
-        }
-
-        registration.onupdatefound = async () => {
-          await registration.update();
-
-          onEnabledUpdate();
-        };
-      } finally {
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          enabledUpdate: true,
-        }));
-      }
-    };
-
-    callback();
-  }, [onEnabledUpdate, registration]);
 
   useEffect(() => {
     try {
@@ -231,10 +178,8 @@ export default function usePwa(): PwaData {
     canInstallprompt,
     enabledA2hs,
     enabledPwa,
-    enabledUpdate,
     isLoading,
     isPwa,
-    unregister,
     showInstallPrompt,
     userChoice,
   };
