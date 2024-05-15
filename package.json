@@ -71,7 +71,7 @@
     "start": "react-scripts start"
   },
   "types": "dist/index.d.ts",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "volta": {
     "node": "16.20.2"
   }

@@ -214,10 +214,26 @@ export default function usePwa(): PwaData {
 
   useEffect(() => {
     try {
-      if (
-        !("standalone" in window.navigator) &&
-        !window.matchMedia("(display-mode: standalone)").matches
-      ) {
+      const {
+        document: { referrer },
+        navigator,
+      } = window;
+      const { userAgent } = navigator;
+      const lownerUserAgent = userAgent.toLowerCase();
+      const isPwa =
+        // iOS PWA Standalone
+        ((lownerUserAgent.includes("iphone") ||
+          lownerUserAgent.includes("ipad")) &&
+          "standalone" in navigator) ||
+        // Android Trusted Web App
+        referrer.includes("android-app://") ||
+        // Chrome PWA (supporting fullscreen, standalone, minimal-ui)
+        ["fullscreen", "standalone", "minimal-ui"].some(
+          (displayMode) =>
+            window.matchMedia("(display-mode: " + displayMode + ")").matches
+        );
+
+      if (!isPwa) {
         return;
       }
 
