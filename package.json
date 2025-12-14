@@ -16,7 +16,7 @@
     "url": "https://github.com/piro0919/use-pwa/issues"
   },
   "devDependencies": {
-    "@types/node": "12.20.55",
+    "@types/node": "24.10.4",
     "@types/react": "16.14.68",
     "@types/react-dom": "16.9.25",
     "gh-pages": "3.2.3",
@@ -70,6 +70,6 @@
   "types": "dist/index.d.ts",
   "version": "2.2.0",
   "volta": {
-    "node": "16.20.2"
+    "node": "24.12.0"
   }
 }
