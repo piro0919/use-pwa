@@ -1,53 +1,9 @@
 {
-  "name": "use-pwa",
-  "version": "3.0.0",
-  "description": "React hook for PWA installation detection and handling",
-  "keywords": [
-    "react",
-    "hook",
-    "pwa",
-    "progressive-web-app",
-    "install-prompt",
-    "a2hs"
-  ],
   "author": "piro0919",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/piro0919/use-pwa.git"
-  },
-  "homepage": "https://use-pwa.kkweb.io",
   "bugs": {
     "url": "https://github.com/piro0919/use-pwa/issues"
   },
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
-    }
-  },
-  "files": [
-    "dist"
-  ],
-  "sideEffects": false,
-  "scripts": {
-    "build": "next build",
-    "build:lib": "tsup",
-    "dev": "next dev",
-    "format": "biome format --write",
-    "lint": "biome check",
-    "prepublishOnly": "npm run build:lib",
-    "start": "next start"
-  },
-  "peerDependencies": {
-    "react": ">=17.0.0"
-  },
+  "description": "React hook for PWA installation detection and handling",
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
     "@serwist/next": "^9.4.2",
@@ -61,5 +17,49 @@
     "serwist": "^9.4.2",
     "tsup": "^8.5.1",
     "typescript": "^5"
-  }
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "default": "./dist/index.mjs",
+        "types": "./dist/index.d.mts"
+      },
+      "require": {
+        "default": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://use-pwa.kkweb.io",
+  "keywords": [
+    "react",
+    "hook",
+    "pwa",
+    "progressive-web-app",
+    "install-prompt",
+    "a2hs"
+  ],
+  "license": "MIT",
+  "name": "use-pwa",
+  "peerDependencies": {
+    "react": ">=17.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/piro0919/use-pwa.git"
+  },
+  "scripts": {
+    "build": "next build",
+    "build:lib": "tsup",
+    "dev": "next dev",
+    "format": "biome format --write",
+    "lint": "biome check",
+    "prepublishOnly": "npm run build:lib",
+    "start": "next start"
+  },
+  "sideEffects": false,
+  "version": "3.0.1"
 }
