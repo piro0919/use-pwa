@@ -30,3 +30,5 @@ next-env.d.ts
 # serwist
 public/sw*
 public/swe-worker*
+.vercel
+.env*.local
