@@ -5,11 +5,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "use-pwa",
   description: "React hook for PWA installation detection and handling",
-  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#0a0a0a",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
