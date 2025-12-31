@@ -1,0 +1,7 @@
+pre-commit:
+  parallel: true
+  commands:
+    biome:
+      glob: "*.{js,jsx,ts,tsx,json}"
+      run: npx biome check --write {staged_files}
+      stage_fixed: true

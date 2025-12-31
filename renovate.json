@@ -1,9 +1,62 @@
 {
-  "extends": ["config:base"],
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "assignees": [],
+  "automerge": true,
+  "dependencyDashboard": true,
+  "extends": ["config:recommended", ":timezone(Asia/Tokyo)"],
   "packageRules": [
     {
       "automerge": true,
-      "updateTypes": ["minor", "patch", "pin", "digest"]
+      "groupName": "devDependencies (minor/patch)",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
+    },
+    {
+      "automerge": true,
+      "groupName": "dependencies (minor/patch)",
+      "matchDepTypes": ["dependencies"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
+    },
+    {
+      "automerge": false,
+      "groupName": "major updates",
+      "labels": ["dependencies", "major-update"],
+      "matchUpdateTypes": ["major"],
+      "prPriority": 10
+    },
+    {
+      "addLabels": ["breaking-change"],
+      "automerge": false,
+      "groupName": "Next.js major updates",
+      "labels": ["dependencies", "nextjs", "major-update"],
+      "matchPackageNames": ["next", "@next/*"],
+      "matchUpdateTypes": ["major"],
+      "prPriority": 20
+    },
+    {
+      "addLabels": ["breaking-change"],
+      "automerge": false,
+      "groupName": "React major updates",
+      "labels": ["dependencies", "react", "major-update"],
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ],
+      "matchUpdateTypes": ["major"],
+      "prPriority": 20
+    },
+    {
+      "automerge": false,
+      "groupName": "TypeScript major updates",
+      "labels": ["dependencies", "typescript", "major-update"],
+      "matchPackageNames": ["typescript", "@types/*"],
+      "matchUpdateTypes": ["major"],
+      "prPriority": 15
     }
-  ]
+  ],
+  "platformAutomerge": true,
+  "reviewers": [],
+  "schedule": ["every weekend"]
 }

@@ -1,0 +1,152 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+:root {
+  --bg: #0a0a0a;
+  --fg: #ededed;
+  --muted: #888;
+  --accent: #0070f3;
+  --accent-hover: #0060df;
+  --card-bg: #141414;
+  --border: #333;
+  --success: #10b981;
+  --warning: #f59e0b;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  max-width: 480px;
+  width: 100%;
+  padding: 2rem;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.description {
+  color: var(--muted);
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.install-button {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: white;
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.install-button:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.install-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.status {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.status-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+.status-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+}
+
+.status-label {
+  color: var(--muted);
+}
+
+.status-value {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+}
+
+.status-value.true {
+  color: var(--success);
+}
+
+.status-value.false {
+  color: var(--muted);
+}
+
+.message {
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.message.success {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--success);
+}
+
+.message.warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: var(--warning);
+}
+
+.github-link {
+  display: block;
+  text-align: center;
+  margin-top: 1.5rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.github-link:hover {
+  color: var(--fg);
+}

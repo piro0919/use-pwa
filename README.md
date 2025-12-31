@@ -1,65 +1,64 @@
 # use-pwa
 
-use-pwa is install and update handler for pwa.
+React hook for detecting and handling PWA (Progressive Web App) installation.
 
-## Features
-
-- TypeScript support
-- SSR support
-- Update support
+[Demo](https://use-pwa.kkweb.io/)
 
 ## Installation
 
-`npm i --save use-pwa`
-
-## Example
-
-[Example](https://use-pwa.kk-web.link/)
-
-### Before Installation
-
-| OS      | Browser | appinstalled  | canInstallprompt | enabledA2hs | enabledPwa | isPwa   | userChoice        |
-| ------- | ------- | ------------- | ---------------- | ----------- | ---------- | ------- | ----------------- |
-| Mac     | Chrome  | `false`       | `true`           | `false`     | `true`     | `false` | `undefined`       |
-| 〃      | Safari  | `false`       | `false`          | `false`     | `false`    | `false` | `undefined`       |
-| 〃      | Firefox | `false`       | `false`          | `false`     | `false`    | `false` | `undefined`       |
-| Android | Chrome  | `false` (\*1) | `true`           | `false`     | `true`     | `false` | `undefined` (\*2) |
-| 〃      | Brave   | `false` (\*1) | `true`           | `false`     | `true`     | `false` | `undefined` (\*2) |
-| iOS     | Safari  | `false`       | `false`          | `true`      | `false`    | `false` | `undefined`       |
-| 〃      | Brave   | `false`       | `false`          | `true`      | `false`    | `false` | `undefined`       |
-
-1. Changes to `true` only immediately after installation.
-2. Changes to `object` only immediately after installation.
-
-### After Installation
-
-| OS      | Browser     | appinstalled  | canInstallprompt | enabledA2hs | enabledPwa | isPwa        | userChoice  |
-| ------- | ----------- | ------------- | ---------------- | ----------- | ---------- | ------------ | ----------- |
-| Mac     | PWA         | `false` (\*1) | `false` (\*1)    | `false`     | `true`     | `true` (\*2) | `undefined` |
-| 〃      | Chrome      | `false`       | `false`          | `false`     | `true`     | `false`      | `undefined` |
-| Android | PWA(Chrome) | `false`       | `false`          | `false`     | `true`     | `true`       | `undefined` |
-| 〃      | Chrome      | `false`       | `false`          | `false`     | `true`     | `false`      | `undefined` |
-| 〃      | PWA(Brave)  | `false`       | `false`          | `false`     | `true`     | `true`       | `undefined` |
-| 〃      | Brave       | `false`       | `true`           | `false`     | `true`     | `false`      | `undefined` |
-| iOS     | PWA         | `false`       | `false`          | `true`      | `false`    | `true`       | `undefined` |
-| 〃      | Safari      | `false`       | `false`          | `true`      | `false`    | `false`      | `undefined` |
-
-1. `true` is set only at first startup.
-2. `false` is set only at first startup.
+```bash
+npm install use-pwa
+```
 
 ## Usage
 
-[Example Code](https://github.com/piro0919/use-pwa/blob/master/src/App.tsx)
+```tsx
+import usePwa from "use-pwa";
 
-## Return
+function App() {
+  const { canInstall, install, isInstalled, isSupported } = usePwa();
 
-| Return            |   Type   | Optional | Remarks                                                                                     |
-| ----------------- | :------: | :------: | ------------------------------------------------------------------------------------------- |
-| appinstalled      | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Window/appinstalled_event)           |
-| canInstallprompt  | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)            |
-| enabledA2hs       | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Add_to_home_screen) |
-| enabledPwa        | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)            |
-| isLoading         | Boolean  |          |                                                                                             |
-| isPwa             | Boolean  |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode)                 |
-| showInstallPrompt | Function |          | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent/prompt)     |
-| userChoice        |  Object  |    ✓     | [MDN](https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent)            |
+  if (!isSupported || isInstalled) {
+    return null;
+  }
+
+  return (
+    <button disabled={!canInstall} onClick={install}>
+      Install PWA
+    </button>
+  );
+}
+```
+
+## API
+
+### `usePwa(): PwaData`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `canInstall` | `boolean` | `true` when install prompt is available |
+| `install` | `() => Promise<UserChoice \| undefined>` | Triggers the install prompt |
+| `isInstalled` | `boolean` | `true` when running as installed PWA |
+| `isSupported` | `boolean` | `true` when browser supports PWA installation |
+
+### `UserChoice`
+
+Returned by `install()` when the user responds to the prompt:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `outcome` | `"accepted" \| "dismissed"` | User's choice |
+| `platform` | `string` | Platform string |
+
+## Features
+
+- Simple 4-property API
+- Detects PWA install prompts
+- Browser support detection
+- Standalone mode detection
+- SSR compatible
+- TypeScript support
+
+## License
+
+MIT

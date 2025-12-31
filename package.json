@@ -1,75 +1,65 @@
 {
-  "author": "piro <piro.haniwa@gmail.com> (https://kk-web.link/)",
-  "browserslist": {
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ],
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ]
+  "name": "use-pwa",
+  "version": "3.0.0",
+  "description": "React hook for PWA installation detection and handling",
+  "keywords": [
+    "react",
+    "hook",
+    "pwa",
+    "progressive-web-app",
+    "install-prompt",
+    "a2hs"
+  ],
+  "author": "piro0919",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/piro0919/use-pwa.git"
   },
+  "homepage": "https://use-pwa.kkweb.io",
   "bugs": {
     "url": "https://github.com/piro0919/use-pwa/issues"
   },
-  "devDependencies": {
-    "@types/node": "12.20.55",
-    "@types/react": "16.14.60",
-    "@types/react-dom": "16.9.24",
-    "gh-pages": "3.2.3",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "react-scripts": "4.0.3",
-    "typescript": "4.9.5",
-    "web-vitals": "0.2.4",
-    "workbox-background-sync": "5.1.4",
-    "workbox-broadcast-update": "5.1.4",
-    "workbox-cacheable-response": "5.1.4",
-    "workbox-core": "5.1.4",
-    "workbox-expiration": "5.1.4",
-    "workbox-google-analytics": "5.1.4",
-    "workbox-navigation-preload": "5.1.4",
-    "workbox-precaching": "5.1.4",
-    "workbox-range-requests": "5.1.4",
-    "workbox-routing": "5.1.4",
-    "workbox-strategies": "5.1.4",
-    "workbox-streams": "5.1.4"
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "homepage": "https://use-pwa.kk-web.link",
-  "keywords": [
-    "hooks",
-    "react",
-    "pwa",
-    "usePwa"
+  "files": [
+    "dist"
   ],
-  "license": "MIT",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "name": "use-pwa",
-  "private": false,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/piro0919/use-pwa.git"
-  },
+  "sideEffects": false,
   "scripts": {
-    "build": "react-scripts build",
-    "build:package": "tsc -p tsconfig.gen-dts.json",
-    "deploy": "gh-pages -d build",
-    "predeploy": "npm run build",
-    "start": "react-scripts start"
+    "build": "next build",
+    "build:lib": "tsup",
+    "dev": "next dev",
+    "format": "biome format --write",
+    "lint": "biome check",
+    "prepublishOnly": "npm run build:lib",
+    "start": "next start"
   },
-  "types": "dist/index.d.ts",
-  "version": "2.2.0",
-  "volta": {
-    "node": "16.20.2"
+  "peerDependencies": {
+    "react": ">=17.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.0",
+    "@serwist/next": "^9.4.2",
+    "@types/node": "25.0.3",
+    "@types/react": "^19.2.7",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "lefthook": "^2.0.13",
+    "next": "16.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "serwist": "^9.4.2",
+    "tsup": "^8.5.1",
+    "typescript": "^5"
   }
 }
