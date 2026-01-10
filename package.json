@@ -7,7 +7,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.3.11",
     "@serwist/next": "^9.4.2",
-    "@types/node": "25.0.3",
+    "@types/node": "25.0.5",
     "@types/react": "^19.2.7",
     "babel-plugin-react-compiler": "^1.0.0",
     "lefthook": "^2.0.13",
