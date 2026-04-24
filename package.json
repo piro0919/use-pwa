@@ -5,18 +5,18 @@
   },
   "description": "React hook for PWA installation detection and handling",
   "devDependencies": {
-    "@biomejs/biome": "2.4.12",
-    "@serwist/next": "^9.4.2",
+    "@biomejs/biome": "2.4.13",
+    "@serwist/next": "^9.5.7",
     "@types/node": "25.6.0",
-    "@types/react": "^19.2.7",
+    "@types/react": "^19.2.14",
     "babel-plugin-react-compiler": "^1.0.0",
-    "lefthook": "^2.0.13",
+    "lefthook": "^2.1.6",
     "next": "16.2.4",
     "react": "19.2.5",
     "react-dom": "19.2.5",
-    "serwist": "^9.4.2",
+    "serwist": "^9.5.7",
     "tsup": "^8.5.1",
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   },
   "exports": {
     ".": {
