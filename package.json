@@ -45,7 +45,7 @@
   "license": "MIT",
   "name": "use-pwa",
   "peerDependencies": {
-    "react": ">=19.2.5"
+    "react": ">=19.2.6"
   },
   "repository": {
     "type": "git",
