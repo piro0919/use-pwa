@@ -7,16 +7,19 @@
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
     "@serwist/next": "^9.4.2",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "25.0.3",
     "@types/react": "^19.2.7",
     "babel-plugin-react-compiler": "^1.0.0",
+    "jsdom": "^29.1.1",
     "lefthook": "^2.0.13",
     "next": "16.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "serwist": "^9.4.2",
     "tsup": "^8.5.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.6"
   },
   "exports": {
     ".": {
@@ -54,6 +57,8 @@
   "scripts": {
     "build": "next build",
     "build:lib": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "dev": "next dev",
     "format": "biome format --write",
     "lint": "biome check",
@@ -61,5 +66,5 @@
     "start": "next start"
   },
   "sideEffects": false,
-  "version": "3.0.1"
+  "version": "3.0.2"
 }

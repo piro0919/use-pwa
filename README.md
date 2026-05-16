@@ -4,6 +4,12 @@ React hook for detecting and handling PWA (Progressive Web App) installation.
 
 [Demo](https://use-pwa.kkweb.io/)
 
+## Why use-pwa
+
+Other PWA install hooks miss the `beforeinstallprompt` event when it fires before React hydration. `use-pwa` captures the event at module load time, so the install button shows up reliably even on the first paint.
+
+> Note on iOS Safari: `isSupported` is `false` because iOS does not expose `BeforeInstallPromptEvent`. "Add to Home Screen" on iOS is a manual user gesture, not programmatic — this is by design.
+
 ## Installation
 
 ```bash

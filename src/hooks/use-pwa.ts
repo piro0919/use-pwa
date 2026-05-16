@@ -54,6 +54,11 @@ export default function usePwa(): PwaData {
     await promptEvent.current.prompt();
     const choice = await promptEvent.current.userChoice;
 
+    // beforeinstallprompt is one-shot per page load: the same event
+    // cannot be prompted again after it resolves. We clear only on
+    // `accepted` so callers can re-prompt after a dismissal (the next
+    // genuine browser event will repopulate state via the effect
+    // below).
     if (choice.outcome === "accepted") {
       setCanInstall(false);
       promptEvent.current = null;
