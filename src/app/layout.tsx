@@ -5,6 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://use-pwa.kkweb.io"),
+  alternates: { canonical: "/" },
   title: "use-pwa",
   description: "React hook for PWA installation detection and handling",
 };
