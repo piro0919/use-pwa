@@ -4,75 +4,73 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**use-pwa** is a React hook library for detecting and handling Progressive Web App (PWA) installation states. It provides developers with easy access to PWA lifecycle events and capabilities across different browsers and platforms.
+**use-pwa** is a React hook library for detecting and handling Progressive Web App (PWA) installation states. Its differentiator: it captures `beforeinstallprompt` at module load time, before React hydration, so the install button is reliable on first paint — many other PWA hooks miss this event.
 
 - **npm package:** use-pwa
+- **Demo site:** <https://use-pwa.kkweb.io>
 
 ## Tech Stack
 
-- React 19
+- React 19 (peer: React >= 17)
 - TypeScript 5
-- Next.js 16 (App Router)
+- Next.js 16 (App Router) — demo only
 - Biome (linter/formatter)
 - tsup (library build)
+- Vitest + jsdom — tests
 - Serwist (Service Worker for demo site)
 - Vercel (deployment)
 
 ## Project Structure
 
-```
+```text
 src/
-├── index.ts                 # npm package entry point
-├── hooks/usePwa/index.ts    # Main hook implementation
-└── app/                     # Next.js App Router (demo site)
+├── index.ts                  # npm package entry point
+├── hooks/use-pwa.ts          # Main hook implementation
+└── app/                      # Next.js App Router (demo site)
     ├── layout.tsx
     ├── page.tsx
-    ├── sw.ts                # Serwist Service Worker
+    ├── sw.ts                 # Serwist Service Worker
     └── globals.css
 
-public/
-└── manifest.json            # PWA manifest
-
-dist/                        # Compiled npm package output (ESM/CJS)
+tests/use-pwa.test.tsx        # Vitest smoke tests
+public/                       # PWA manifest etc.
+dist/                         # Compiled npm package output (ESM/CJS)
 ```
 
 ## Commands
 
 ```bash
-npm run dev         # Start Next.js development server
-npm run build       # Build Next.js demo site (includes SW)
-npm run build:lib   # Build npm package with tsup
-npm run lint        # Run Biome linter
-npm run format      # Format code with Biome
+npm run dev           # Start Next.js development server
+npm run build         # Build Next.js demo site (includes SW)
+npm run build:lib     # Build npm package with tsup
+npm run test          # Run Vitest
+npm run lint          # Biome check
+npm run format        # Biome format --write
 ```
-
-## Key Files
-
-- `src/index.ts` - Package entry point (re-exports hook)
-- `src/hooks/usePwa/index.ts` - Main hook implementation
-- `src/app/sw.ts` - Serwist Service Worker configuration
-- `next.config.ts` - Next.js config with Serwist integration
-- `tsup.config.ts` - Library build configuration
-- `tsconfig.build.json` - TypeScript config for library build
 
 ## Hook API
 
-The `usePwa` hook returns:
-
-```typescript
-{
-  appinstalled: boolean;        // PWA installation event fired
-  canInstallprompt: boolean;    // Install prompt available
-  enabledA2hs: boolean;         // iOS "Add to Home Screen" available
-  enabledPwa: boolean;          // PWA support available
-  isLoading: boolean;           // Still checking PWA capabilities
-  isPwa: boolean;               // Running as standalone PWA
-  showInstallPrompt: () => void; // Trigger install prompt
-  userChoice?: UserChoice;      // User's install decision
-}
+```ts
+const { canInstall, install, isInstalled, isSupported } = usePwa();
 ```
+
+| Property      | Type                                    | Description                                                                 |
+| ------------- | --------------------------------------- | --------------------------------------------------------------------------- |
+| `canInstall`  | `boolean`                               | Browser has fired `beforeinstallprompt`; calling `install()` is meaningful. |
+| `install`     | `() => Promise<UserChoice \| undefined>` | Triggers the native install prompt. Resolves with the user's choice.        |
+| `isInstalled` | `boolean`                               | The page is currently running as an installed PWA.                          |
+| `isSupported` | `boolean`                               | `BeforeInstallPromptEvent` is available in this browser.                    |
+
+`UserChoice = { outcome: "accepted" \| "dismissed"; platform: string }`.
+
+### Detection details
+
+- **Installed** is detected via: (a) Android TWA referrer (`android-app://`), (b) Chrome-family display modes (`fullscreen` / `standalone` / `minimal-ui`), and (c) iOS `navigator.standalone`.
+- **isSupported = false on iOS Safari** by design — iOS doesn't expose `BeforeInstallPromptEvent`. "Add to Home Screen" on iOS is a manual user gesture, not programmatic.
+- After `install()` resolves with `accepted` we clear the captured event. On `dismissed` we keep it so callers can re-prompt; the next genuine `beforeinstallprompt` from the browser will repopulate state via the effect.
 
 ## Notes
 
-- Serwist is disabled in development (`NODE_ENV !== "production"`) because it doesn't support Turbopack yet
-- Service Worker (`public/sw.js`) is generated at build time and gitignored
+- Serwist is disabled in development (`NODE_ENV !== "production"`) because it doesn't support Turbopack yet.
+- Service Worker (`public/sw.js`) is generated at build time and gitignored.
+- `beforeinstallprompt` is captured at module load time (`src/hooks/use-pwa.ts`) so the event is not lost when it fires before React hydration.
