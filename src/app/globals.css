@@ -1,4 +1,4 @@
-/* 地と差し色は OGP と揃える。1枚絵とページで色が違うと別物に見える */
+/* 地と差し色は OGP と揃える */
 :root {
   --bg: #0b0b0f;
   --panel: #15151c;
@@ -8,7 +8,6 @@
   --dim: #71717a;
   --accent: #34d399;
   --accent-ink: #04241a;
-  --warning: #f59e0b;
 }
 
 * {
@@ -31,30 +30,83 @@ body {
   background: color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
-.container {
-  width: 100%;
-  max-width: 620px;
+.stage {
+  max-width: 680px;
   margin: 0 auto;
   padding: 88px 24px 64px;
 }
 
-/* 中央の小さなカード1枚に閉じない。名前を大きく出して、
-   その下に実際のインストールボタンと状態を置く */
-.card {
-  display: contents;
-}
-
-.title {
+.name {
   font-size: clamp(2.25rem, 7vw, 3.25rem);
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 
-.description {
+.lead {
   max-width: 34em;
   margin-top: 16px;
   color: var(--muted);
-  line-height: 1.7;
+  line-height: 1.75;
+}
+
+/* 3つの真偽値を一本の線として置く。左の点が現在地 */
+.track {
+  margin-top: 48px;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  padding: 0 0 28px 34px;
+  border-left: 2px solid var(--line);
+}
+
+.step:last-child {
+  padding-bottom: 0;
+  border-left-color: transparent;
+}
+
+.step-dot {
+  position: absolute;
+  top: 2px;
+  left: -9px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+}
+
+.step.done {
+  border-left-color: var(--accent);
+}
+
+.step.done .step-dot {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.step.current .step-dot {
+  border-color: var(--accent);
+}
+
+.step-label {
+  display: block;
+  color: var(--dim);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1rem;
+}
+
+.step.done .step-label,
+.step.current .step-label {
+  color: var(--fg);
+}
+
+.step-note {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .install-button {
@@ -81,74 +133,39 @@ body {
   cursor: not-allowed;
 }
 
-.message {
+.verdict {
   margin-top: 40px;
   padding: 1.1rem 1.25rem;
   border: 1px solid var(--line);
+  color: var(--muted);
   font-size: 0.95rem;
+  line-height: 1.7;
 }
 
-.message.success {
+.verdict.done {
   border-color: var(--accent);
   color: var(--accent);
 }
 
-.message.warning {
-  border-color: var(--warning);
-  color: var(--warning);
-}
-
-.status {
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
   margin-top: 48px;
   padding-top: 24px;
   border-top: 1px solid var(--line);
 }
 
-.status-title {
-  color: var(--dim);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.status-list {
-  margin-top: 8px;
-  list-style: none;
-}
-
-.status-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 0.95rem;
-}
-
-.status-label {
+.install {
+  padding: 10px 14px;
+  border: 1px solid var(--line);
   color: var(--muted);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-
-.status-value {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-
-.status-value.true {
-  color: var(--accent);
-}
-
-.status-value.false {
-  color: var(--dim);
+  font-size: 0.85rem;
 }
 
 .github-link {
-  display: inline-block;
-  width: 100%;
-  margin-top: 48px;
-  padding-top: 24px;
-  border-top: 1px solid var(--line);
   color: var(--dim);
   font-size: 0.9rem;
   text-decoration: none;
@@ -157,4 +174,10 @@ body {
 
 .github-link:hover {
   color: var(--accent);
+}
+
+code {
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  font-size: 0.85em;
 }
