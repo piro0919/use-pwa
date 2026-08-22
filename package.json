@@ -19,7 +19,7 @@
     "react-dom": "19.2.3",
     "serwist": "^9.5.12",
     "tsup": "^8.5.1",
-    "typescript": "^5",
+    "typescript": "^7.0.2",
     "vitest": "^4.1.6"
   },
   "exports": {
