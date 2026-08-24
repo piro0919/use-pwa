@@ -64,7 +64,7 @@
     "dev": "next dev",
     "format": "biome format --write",
     "lint": "biome check",
-    "prepublishOnly": "npm run build:lib",
+    "prepublishOnly": "pnpm test && pnpm build:lib",
     "start": "next start"
   },
   "sideEffects": false,
