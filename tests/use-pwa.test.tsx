@@ -7,7 +7,6 @@ beforeEach(() => {
     configurable: true,
     value: "",
   });
-  // @ts-expect-error reset between tests
   delete (window.navigator as { standalone?: boolean }).standalone;
 });
 

@@ -65,7 +65,8 @@
     "format": "biome format --write",
     "lint": "biome check",
     "prepublishOnly": "pnpm test && pnpm build:lib",
-    "start": "next start"
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
   },
   "sideEffects": false,
   "version": "3.0.3"
