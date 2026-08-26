@@ -74,6 +74,20 @@ const { canInstall, install, isInstalled, isSupported, needsManualInstall } =
 - `install()` never rejects. If the browser refuses a second `prompt()` on an already-used event, we drop the event and resolve with `undefined`.
 - After `install()` resolves with `accepted` we clear the captured event. On `dismissed` we keep it so callers can re-prompt; the next genuine `beforeinstallprompt` from the browser will repopulate state via the effect.
 
+## Considered and rejected
+
+- **`navigator.getInstalledRelatedApps()`** (Aug 2026). It would report whether a
+  paired native app is already installed. Rejected because it is async: every
+  other property here is synchronous or event-driven, so adding it means either
+  reporting `false` during the pending window or reintroducing the `isLoading`
+  flag that v3 deleted. It also only ever returns anything for callers who set up
+  `related_applications` plus digital asset links, while the code ships to
+  everyone — a single hook gets no tree-shaking.
+- **`BeforeInstallPromptEvent.platforms`** (Aug 2026). Cheap to expose, since the
+  captured event already carries it. Rejected because MDN marks it non-standard
+  and explicitly advises against production use; exposing it would make its
+  removal our breaking change.
+
 ## Notes
 
 - Serwist is disabled in development (`NODE_ENV !== "production"`) because it doesn't support Turbopack yet.
