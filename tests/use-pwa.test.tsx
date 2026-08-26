@@ -34,6 +34,53 @@ function fireBeforeInstallPrompt({
   return event;
 }
 
+type ControllableMatchMedia = {
+  restore: () => void;
+  setStandalone: (value: boolean) => void;
+};
+
+/** Replaces window.matchMedia with one whose display-mode can be flipped. */
+function mockMatchMedia(): ControllableMatchMedia {
+  const original = window.matchMedia;
+  const listeners = new Set<() => void>();
+  let standalone = false;
+
+  window.matchMedia = (query: string) =>
+    ({
+      addEventListener: (_: string, listener: () => void) => {
+        listeners.add(listener);
+      },
+      addListener: (listener: () => void) => {
+        listeners.add(listener);
+      },
+      dispatchEvent: () => false,
+      matches: standalone && query.includes("standalone"),
+      media: query,
+      onchange: null,
+      removeEventListener: (_: string, listener: () => void) => {
+        listeners.delete(listener);
+      },
+      removeListener: (listener: () => void) => {
+        listeners.delete(listener);
+      },
+    }) as unknown as MediaQueryList;
+
+  return {
+    restore: () => {
+      window.matchMedia = original;
+    },
+    setStandalone: (value: boolean) => {
+      standalone = value;
+
+      act(() => {
+        for (const listener of listeners) {
+          listener();
+        }
+      });
+    },
+  };
+}
+
 describe("usePwa", () => {
   it("returns the expected shape", async () => {
     const { default: usePwa } = await import("../src/hooks/use-pwa");
@@ -149,5 +196,72 @@ describe("usePwa", () => {
     expect(second).toBeUndefined();
     expect(prompt).toHaveBeenCalledTimes(2);
     expect(result.current.canInstall).toBe(false);
+  });
+
+  it("flips isInstalled on the appinstalled event without a reload", async () => {
+    const { default: usePwa } = await import("../src/hooks/use-pwa");
+    const { result } = renderHook(() => usePwa());
+
+    act(() => {
+      fireBeforeInstallPrompt({ outcome: "accepted" });
+    });
+
+    expect(result.current.isInstalled).toBe(false);
+    expect(result.current.canInstall).toBe(true);
+
+    act(() => {
+      window.dispatchEvent(new Event("appinstalled"));
+    });
+
+    expect(result.current.isInstalled).toBe(true);
+    expect(result.current.canInstall).toBe(false);
+  });
+
+  it("re-evaluates isInstalled when the display mode changes", async () => {
+    const matchMedia = mockMatchMedia();
+
+    try {
+      const { default: usePwa } = await import("../src/hooks/use-pwa");
+      const { result } = renderHook(() => usePwa());
+
+      expect(result.current.isInstalled).toBe(false);
+
+      matchMedia.setStandalone(true);
+
+      expect(result.current.isInstalled).toBe(true);
+
+      matchMedia.setStandalone(false);
+
+      expect(result.current.isInstalled).toBe(false);
+    } finally {
+      matchMedia.restore();
+    }
+  });
+
+  it("removes the listeners it added on unmount, keeping the module-level one", async () => {
+    const added = vi.spyOn(window, "addEventListener");
+    const removed = vi.spyOn(window, "removeEventListener");
+
+    try {
+      // Importing here registers the module-level beforeinstallprompt
+      // listener, which is deliberately never removed: it has to outlive
+      // any component so the event is not lost before hydration.
+      const { default: usePwa } = await import("../src/hooks/use-pwa");
+      const count = (spy: typeof added, type: string): number =>
+        spy.mock.calls.filter(([name]) => name === type).length;
+      const { unmount } = renderHook(() => usePwa());
+
+      expect(count(added, "beforeinstallprompt")).toBe(2);
+      expect(count(added, "appinstalled")).toBe(1);
+      expect(count(removed, "beforeinstallprompt")).toBe(0);
+
+      unmount();
+
+      expect(count(removed, "beforeinstallprompt")).toBe(1);
+      expect(count(removed, "appinstalled")).toBe(1);
+    } finally {
+      added.mockRestore();
+      removed.mockRestore();
+    }
   });
 });

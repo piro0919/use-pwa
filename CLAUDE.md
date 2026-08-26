@@ -66,7 +66,9 @@ const { canInstall, install, isInstalled, isSupported } = usePwa();
 ### Detection details
 
 - **Installed** is detected via: (a) Android TWA referrer (`android-app://`), (b) Chrome-family display modes (`fullscreen` / `standalone` / `minimal-ui`), and (c) iOS `navigator.standalone`.
+- `isInstalled` keeps following those signals after mount: we listen for `appinstalled` and subscribe to each `display-mode` media query, so the install button disappears without a reload. `appinstalled` is Chromium-family only, same as `beforeinstallprompt`.
 - **isSupported = false on iOS Safari** by design — iOS doesn't expose `BeforeInstallPromptEvent`. "Add to Home Screen" on iOS is a manual user gesture, not programmatic.
+- `install()` never rejects. If the browser refuses a second `prompt()` on an already-used event, we drop the event and resolve with `undefined`.
 - After `install()` resolves with `accepted` we clear the captured event. On `dismissed` we keep it so callers can re-prompt; the next genuine `beforeinstallprompt` from the browser will repopulate state via the effect.
 
 ## Notes

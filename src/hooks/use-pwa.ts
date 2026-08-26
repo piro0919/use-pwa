@@ -33,6 +33,44 @@ if (typeof window !== "undefined") {
   });
 }
 
+// Chrome PWA display modes that mean "running as an installed app"
+const DISPLAY_MODES = ["fullscreen", "standalone", "minimal-ui"] as const;
+
+function detectInstalled(): boolean {
+  // Android Trusted Web App
+  if (document.referrer.includes("android-app://")) {
+    return true;
+  }
+
+  const isDisplayModePwa = DISPLAY_MODES.some(
+    (mode) => window.matchMedia(`(display-mode: ${mode})`).matches,
+  );
+
+  if (isDisplayModePwa) {
+    return true;
+  }
+
+  // iOS PWA Standalone
+  return Boolean(navigator.standalone);
+}
+
+// Safari before 14 only has the deprecated addListener/removeListener.
+function subscribe(query: MediaQueryList, listener: () => void): void {
+  if (typeof query.addEventListener === "function") {
+    query.addEventListener("change", listener);
+  } else {
+    query.addListener(listener);
+  }
+}
+
+function unsubscribe(query: MediaQueryList, listener: () => void): void {
+  if (typeof query.removeEventListener === "function") {
+    query.removeEventListener("change", listener);
+  } else {
+    query.removeListener(listener);
+  }
+}
+
 export type PwaData = {
   canInstall: boolean;
   install: () => Promise<UserChoice | undefined>;
@@ -111,30 +149,40 @@ export default function usePwa(): PwaData {
     };
   }, []);
 
-  // Detect if running as installed PWA
+  // Detect if running as installed PWA, and keep following it
   useEffect(() => {
-    // Android Trusted Web App
-    if (document.referrer.includes("android-app://")) {
-      setIsInstalled(true);
-      return;
-    }
+    const detect = (): void => setIsInstalled(detectInstalled());
 
-    // Chrome PWA (supporting fullscreen, standalone, minimal-ui)
-    const displayModes = ["fullscreen", "standalone", "minimal-ui"] as const;
-    const isDisplayModePwa = displayModes.some(
-      (mode) => window.matchMedia(`(display-mode: ${mode})`).matches,
+    detect();
+
+    // `appinstalled` lets us drop the install button without a reload.
+    // Like `beforeinstallprompt`, it is a Chromium-family event, so the
+    // browsers that can reach install() are the ones that report back.
+    const handleAppInstalled = (): void => {
+      setIsInstalled(true);
+      discardEvent();
+    };
+
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    // The display mode changes at runtime — entering or leaving
+    // fullscreen, or launching the installed app from the same page.
+    const queries = DISPLAY_MODES.map((mode) =>
+      window.matchMedia(`(display-mode: ${mode})`),
     );
 
-    if (isDisplayModePwa) {
-      setIsInstalled(true);
-      return;
+    for (const query of queries) {
+      subscribe(query, detect);
     }
 
-    // iOS PWA Standalone
-    if (navigator.standalone) {
-      setIsInstalled(true);
-    }
-  }, []);
+    return () => {
+      window.removeEventListener("appinstalled", handleAppInstalled);
+
+      for (const query of queries) {
+        unsubscribe(query, detect);
+      }
+    };
+  }, [discardEvent]);
 
   // Detect PWA support
   useEffect(() => {

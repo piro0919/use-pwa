@@ -43,8 +43,8 @@ function App() {
 | Property | Type | Description |
 |----------|------|-------------|
 | `canInstall` | `boolean` | `true` when install prompt is available |
-| `install` | `() => Promise<UserChoice \| undefined>` | Triggers the install prompt |
-| `isInstalled` | `boolean` | `true` when running as installed PWA |
+| `install` | `() => Promise<UserChoice \| undefined>` | Triggers the install prompt. Never rejects; resolves with `undefined` when no prompt is available |
+| `isInstalled` | `boolean` | `true` when running as installed PWA. Updates live, without a reload |
 | `isSupported` | `boolean` | `true` when browser supports PWA installation |
 
 ### `UserChoice`
@@ -61,7 +61,7 @@ Returned by `install()` when the user responds to the prompt:
 - Simple 4-property API
 - Detects PWA install prompts
 - Browser support detection
-- Standalone mode detection
+- Standalone mode detection, kept up to date after install
 - SSR compatible
 - TypeScript support
 
