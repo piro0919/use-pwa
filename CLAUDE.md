@@ -51,7 +51,8 @@ npm run format        # Biome format --write
 ## Hook API
 
 ```ts
-const { canInstall, install, isInstalled, isSupported } = usePwa();
+const { canInstall, install, isInstalled, isSupported, needsManualInstall } =
+  usePwa();
 ```
 
 | Property      | Type                                    | Description                                                                 |
@@ -60,6 +61,7 @@ const { canInstall, install, isInstalled, isSupported } = usePwa();
 | `install`     | `() => Promise<UserChoice \| undefined>` | Triggers the native install prompt. Resolves with the user's choice.        |
 | `isInstalled` | `boolean`                               | The page is currently running as an installed PWA.                          |
 | `isSupported` | `boolean`                               | `BeforeInstallPromptEvent` is available in this browser.                    |
+| `needsManualInstall` | `boolean`                        | Installing is only possible by hand — iOS/iPadOS. Never true alongside `canInstall` or `isInstalled`. |
 
 `UserChoice = { outcome: "accepted" \| "dismissed"; platform: string }`.
 
@@ -67,6 +69,7 @@ const { canInstall, install, isInstalled, isSupported } = usePwa();
 
 - **Installed** is detected via: (a) Android TWA referrer (`android-app://`), (b) Chrome-family display modes (`fullscreen` / `standalone` / `minimal-ui`), and (c) iOS `navigator.standalone`.
 - `isInstalled` keeps following those signals after mount: we listen for `appinstalled` and subscribe to each `display-mode` media query, so the install button disappears without a reload. `appinstalled` is Chromium-family only, same as `beforeinstallprompt`.
+- **`needsManualInstall`** is derived, not stored: `isIos && !isInstalled && !canInstall`. iOS detection is UA-based, and iPadOS 13+ sends a Mac user agent, so `navigator.maxTouchPoints > 1` is what separates an iPad from a Mac. Since iOS 16.4 third-party browsers can also Add to Home Screen, so we do not narrow this to Safari. In-app browsers (Instagram, LINE) are a known false positive.
 - **isSupported = false on iOS Safari** by design — iOS doesn't expose `BeforeInstallPromptEvent`. "Add to Home Screen" on iOS is a manual user gesture, not programmatic.
 - `install()` never rejects. If the browser refuses a second `prompt()` on an already-used event, we drop the event and resolve with `undefined`.
 - After `install()` resolves with `accepted` we clear the captured event. On `dismissed` we keep it so callers can re-prompt; the next genuine `beforeinstallprompt` from the browser will repopulate state via the effect.

@@ -8,7 +8,31 @@ beforeEach(() => {
     value: "",
   });
   delete (window.navigator as { standalone?: boolean }).standalone;
+  setUserAgent(DESKTOP_UA);
+  setMaxTouchPoints(0);
 });
+
+const DESKTOP_UA =
+  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
+const IPHONE_UA =
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1";
+// iPadOS sends this byte-for-byte identical to a Mac.
+const MAC_UA =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15";
+
+function setUserAgent(value: string): void {
+  Object.defineProperty(window.navigator, "userAgent", {
+    configurable: true,
+    value,
+  });
+}
+
+function setMaxTouchPoints(value: number): void {
+  Object.defineProperty(window.navigator, "maxTouchPoints", {
+    configurable: true,
+    value,
+  });
+}
 
 type FakePromptEvent = Event & {
   platforms: string[];
@@ -90,6 +114,7 @@ describe("usePwa", () => {
       install: expect.any(Function),
       isInstalled: expect.any(Boolean),
       isSupported: expect.any(Boolean),
+      needsManualInstall: expect.any(Boolean),
     });
   });
 
@@ -263,5 +288,60 @@ describe("usePwa", () => {
       added.mockRestore();
       removed.mockRestore();
     }
+  });
+  it("asks for a manual install on iPhone", async () => {
+    setUserAgent(IPHONE_UA);
+
+    const { default: usePwa } = await import("../src/hooks/use-pwa");
+    const { result } = renderHook(() => usePwa());
+
+    expect(result.current.needsManualInstall).toBe(true);
+  });
+
+  it("asks for a manual install on iPadOS, which claims to be a Mac", async () => {
+    setUserAgent(MAC_UA);
+    setMaxTouchPoints(10);
+
+    const { default: usePwa } = await import("../src/hooks/use-pwa");
+    const { result } = renderHook(() => usePwa());
+
+    expect(result.current.needsManualInstall).toBe(true);
+  });
+
+  it("leaves a real Mac alone", async () => {
+    setUserAgent(MAC_UA);
+    setMaxTouchPoints(0);
+
+    const { default: usePwa } = await import("../src/hooks/use-pwa");
+    const { result } = renderHook(() => usePwa());
+
+    expect(result.current.needsManualInstall).toBe(false);
+  });
+
+  it("drops needsManualInstall once the iOS app is installed", async () => {
+    setUserAgent(IPHONE_UA);
+    (window.navigator as { standalone?: boolean }).standalone = true;
+
+    const { default: usePwa } = await import("../src/hooks/use-pwa");
+    const { result } = renderHook(() => usePwa());
+
+    expect(result.current.isInstalled).toBe(true);
+    expect(result.current.needsManualInstall).toBe(false);
+  });
+
+  it("prefers the real prompt over the manual hint when both look possible", async () => {
+    setUserAgent(IPHONE_UA);
+
+    const { default: usePwa } = await import("../src/hooks/use-pwa");
+    const { result } = renderHook(() => usePwa());
+
+    expect(result.current.needsManualInstall).toBe(true);
+
+    act(() => {
+      fireBeforeInstallPrompt({ outcome: "accepted" });
+    });
+
+    expect(result.current.canInstall).toBe(true);
+    expect(result.current.needsManualInstall).toBe(false);
   });
 });

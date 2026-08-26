@@ -23,7 +23,8 @@ function Step({
 }
 
 export default function Home() {
-  const { canInstall, install, isInstalled, isSupported } = usePwa();
+  const { canInstall, install, isInstalled, isSupported, needsManualInstall } =
+    usePwa();
 
   /* このフックが返すのは3つの真偽値だが、実際には順番のある道のりになる。
      いまどこにいるかを一本の線で見せる */
@@ -71,10 +72,16 @@ export default function Home() {
         >
           {canInstall ? "Install this page" : "Waiting for the prompt…"}
         </button>
+      ) : needsManualInstall ? (
+        <p className="verdict off">
+          Tap the share button, then Add to Home Screen. iOS never fires the
+          event, so <code>isSupported</code> stays false and{" "}
+          <code>needsManualInstall</code> turns true instead.
+        </p>
       ) : (
         <p className="verdict off">
-          This browser never fires the event. On iOS, Add to Home Screen is a
-          manual gesture, so <code>isSupported</code> stays false by design.
+          This browser never fires the event, and it is not a platform that can
+          take the page onto a home screen by hand.
         </p>
       )}
 

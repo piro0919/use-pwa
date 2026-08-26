@@ -54,6 +54,18 @@ function detectInstalled(): boolean {
   return Boolean(navigator.standalone);
 }
 
+function detectIos(): boolean {
+  const ua = navigator.userAgent;
+
+  if (/iPhone|iPad|iPod/.test(ua)) {
+    return true;
+  }
+
+  // iPadOS 13+ sends a user agent byte-identical to a Mac's, so the
+  // touch count is the only thing separating an iPad from a Mac.
+  return ua.includes("Macintosh") && navigator.maxTouchPoints > 1;
+}
+
 // Safari before 14 only has the deprecated addListener/removeListener.
 function subscribe(query: MediaQueryList, listener: () => void): void {
   if (typeof query.addEventListener === "function") {
@@ -76,6 +88,7 @@ export type PwaData = {
   install: () => Promise<UserChoice | undefined>;
   isInstalled: boolean;
   isSupported: boolean;
+  needsManualInstall: boolean;
 };
 
 export default function usePwa(): PwaData {
@@ -83,6 +96,7 @@ export default function usePwa(): PwaData {
   const [canInstall, setCanInstall] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
+  const [isIos, setIsIos] = useState(false);
 
   const discardEvent = useCallback((): void => {
     setCanInstall(false);
@@ -191,10 +205,19 @@ export default function usePwa(): PwaData {
     }
   }, []);
 
+  // Detect iOS, where installing is a manual gesture. Kept out of the
+  // first render so server and client markup agree.
+  useEffect(() => {
+    setIsIos(detectIos());
+  }, []);
+
   return {
     canInstall,
     install,
     isInstalled,
     isSupported,
+    // Nothing can be prompted, but the platform can still take the app
+    // onto the home screen if the user does it by hand.
+    needsManualInstall: isIos && !isInstalled && !canInstall,
   };
 }
