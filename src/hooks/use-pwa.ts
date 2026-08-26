@@ -46,13 +46,33 @@ export default function usePwa(): PwaData {
   const [isInstalled, setIsInstalled] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
 
+  const discardEvent = useCallback((): void => {
+    setCanInstall(false);
+    promptEvent.current = null;
+    capturedEvent = null;
+  }, []);
+
   const install = useCallback(async (): Promise<UserChoice | undefined> => {
-    if (!promptEvent.current) {
+    const event = promptEvent.current;
+
+    if (!event) {
       return undefined;
     }
 
-    await promptEvent.current.prompt();
-    const choice = await promptEvent.current.userChoice;
+    let choice: UserChoice;
+
+    try {
+      await event.prompt();
+      choice = await event.userChoice;
+    } catch {
+      // The browser refuses a second `prompt()` on the same event. We
+      // keep the event after a dismissal (see below), so a caller that
+      // re-prompts without waiting for a fresh browser event lands
+      // here. Drop the spent event rather than surfacing a rejection.
+      discardEvent();
+
+      return undefined;
+    }
 
     // beforeinstallprompt is one-shot per page load: the same event
     // cannot be prompted again after it resolves. We clear only on
@@ -60,13 +80,11 @@ export default function usePwa(): PwaData {
     // genuine browser event will repopulate state via the effect
     // below).
     if (choice.outcome === "accepted") {
-      setCanInstall(false);
-      promptEvent.current = null;
-      capturedEvent = null;
+      discardEvent();
     }
 
     return choice;
-  }, []);
+  }, [discardEvent]);
 
   // Check for captured event and listen for future events
   useEffect(() => {
