@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 4.0.0 - 2026-10-01
 
 - **BREAKING:** the `react` peer range is now `^18.0.0 || ^19.0.0` (was `>=17.0.0`). State is shared through `useSyncExternalStore`, which React 17 does not have.
 - State is shared between every component that calls `usePwa()`. Installing from one component now clears `canInstall` in the others too; previously each instance kept its own copy.
