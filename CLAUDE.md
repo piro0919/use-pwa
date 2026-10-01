@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Tech Stack
 
-- React 19 (peer: React >= 17)
+- React 19 (peer: React 18 or 19 — `useSyncExternalStore` needs 18)
 - TypeScript 5
 - Next.js 16 (App Router) — demo only
 - Biome (linter/formatter)
@@ -72,7 +72,8 @@ const { canInstall, install, isInstalled, isSupported, needsManualInstall } =
 - **`needsManualInstall`** is derived, not stored: `isIos && !isInstalled && !canInstall`. iOS detection is UA-based, and iPadOS 13+ sends a Mac user agent, so `navigator.maxTouchPoints > 1` is what separates an iPad from a Mac. Since iOS 16.4 third-party browsers can also Add to Home Screen, so we do not narrow this to Safari. In-app browsers (Instagram, LINE) are a known false positive.
 - **isSupported = false on iOS Safari** by design — iOS doesn't expose `BeforeInstallPromptEvent`. "Add to Home Screen" on iOS is a manual user gesture, not programmatic.
 - `install()` never rejects. If the browser refuses a second `prompt()` on an already-used event, we drop the event and resolve with `undefined`.
-- After `install()` resolves with `accepted` we clear the captured event. On `dismissed` we keep it so callers can re-prompt; the next genuine `beforeinstallprompt` from the browser will repopulate state via the effect.
+- After `install()` resolves with `accepted` we clear the captured event. On `dismissed` we keep it so callers can re-prompt; the next genuine `beforeinstallprompt` from the browser replaces it.
+- State lives in one module-level store read through `useSyncExternalStore`, so every component calling `usePwa()` sees the same values; installing from one clears `canInstall` everywhere. The server snapshot (and the first client render during hydration) is all `false`.
 
 ## Considered and rejected
 

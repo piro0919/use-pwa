@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 export type UserChoice = {
   outcome: "accepted" | "dismissed";
@@ -21,16 +21,6 @@ declare global {
   interface Navigator {
     standalone?: boolean;
   }
-}
-
-// Capture event at module load time (before React hydration)
-let capturedEvent: BeforeInstallPromptEvent | null = null;
-
-if (typeof window !== "undefined") {
-  window.addEventListener("beforeinstallprompt", (event) => {
-    event.preventDefault();
-    capturedEvent = event as BeforeInstallPromptEvent;
-  });
 }
 
 // Chrome PWA display modes that mean "running as an installed app"
@@ -91,97 +81,89 @@ export type PwaData = {
   needsManualInstall: boolean;
 };
 
-export default function usePwa(): PwaData {
-  const promptEvent = useRef<BeforeInstallPromptEvent | null>(capturedEvent);
-  const [canInstall, setCanInstall] = useState(false);
-  const [isInstalled, setIsInstalled] = useState(false);
-  const [isSupported, setIsSupported] = useState(false);
-  const [isIos, setIsIos] = useState(false);
+type Snapshot = {
+  canInstall: boolean;
+  isInstalled: boolean;
+  isIos: boolean;
+  isSupported: boolean;
+};
 
-  const discardEvent = useCallback((): void => {
-    setCanInstall(false);
-    promptEvent.current = null;
-    capturedEvent = null;
-  }, []);
+// Every hook instance reads this one store, so installing from one
+// component clears `canInstall` in all of them.
 
-  const install = useCallback(async (): Promise<UserChoice | undefined> => {
-    const event = promptEvent.current;
+// What the server renders, and what the first client render must match
+// during hydration: nothing is known until the browser is asked.
+const SERVER_SNAPSHOT: Snapshot = Object.freeze({
+  canInstall: false,
+  isInstalled: false,
+  isIos: false,
+  isSupported: false,
+});
 
-    if (!event) {
-      return undefined;
-    }
+let capturedEvent: BeforeInstallPromptEvent | null = null;
+// Cached so useSyncExternalStore sees the same object until something
+// actually changes. Built lazily: the browser is only asked on the client.
+let snapshot: Snapshot | null = null;
+const listeners = new Set<() => void>();
 
-    let choice: UserChoice;
-
-    try {
-      await event.prompt();
-      choice = await event.userChoice;
-    } catch {
-      // The browser refuses a second `prompt()` on the same event. We
-      // keep the event after a dismissal (see below), so a caller that
-      // re-prompts without waiting for a fresh browser event lands
-      // here. Drop the spent event rather than surfacing a rejection.
-      discardEvent();
-
-      return undefined;
-    }
-
-    // beforeinstallprompt is one-shot per page load: the same event
-    // cannot be prompted again after it resolves. We clear only on
-    // `accepted` so callers can re-prompt after a dismissal (the next
-    // genuine browser event will repopulate state via the effect
-    // below).
-    if (choice.outcome === "accepted") {
-      discardEvent();
-    }
-
-    return choice;
-  }, [discardEvent]);
-
-  // Check for captured event and listen for future events
-  useEffect(() => {
-    // Use captured event if available
-    if (capturedEvent) {
-      promptEvent.current = capturedEvent;
-      setCanInstall(true);
-    }
-
-    const handleBeforeInstallPrompt = (event: BeforeInstallPromptEvent) => {
-      event.preventDefault();
-      promptEvent.current = event;
-      capturedEvent = event;
-      setCanInstall(true);
+function readSnapshot(): Snapshot {
+  if (!snapshot) {
+    snapshot = {
+      canInstall: capturedEvent !== null,
+      isInstalled: detectInstalled(),
+      isIos: detectIos(),
+      isSupported: "BeforeInstallPromptEvent" in window,
     };
+  }
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+  return snapshot;
+}
 
-    return () => {
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt,
-      );
-    };
-  }, []);
+function update(patch: Partial<Snapshot>): void {
+  const current = readSnapshot();
+  const changed = (Object.keys(patch) as (keyof Snapshot)[]).some(
+    (key) => patch[key] !== current[key],
+  );
 
-  // Detect if running as installed PWA, and keep following it
-  useEffect(() => {
-    const detect = (): void => setIsInstalled(detectInstalled());
+  if (!changed) {
+    return;
+  }
 
-    detect();
+  snapshot = { ...current, ...patch };
 
-    // `appinstalled` lets us drop the install button without a reload.
-    // Like `beforeinstallprompt`, it is a Chromium-family event, so the
-    // browsers that can reach install() are the ones that report back.
-    const handleAppInstalled = (): void => {
-      setIsInstalled(true);
-      discardEvent();
-    };
+  for (const listener of listeners) {
+    listener();
+  }
+}
 
+function discardEvent(): void {
+  capturedEvent = null;
+  update({ canInstall: false });
+}
+
+const detect = (): void => update({ isInstalled: detectInstalled() });
+
+// `appinstalled` lets us drop the install button without a reload. Like
+// `beforeinstallprompt`, it is a Chromium-family event, so the browsers
+// that can reach install() are the ones that report back.
+const handleAppInstalled = (): void => {
+  capturedEvent = null;
+  update({ canInstall: false, isInstalled: true });
+};
+
+let queries: MediaQueryList[] = [];
+
+// Listeners for installed state live only while some component is
+// mounted; the beforeinstallprompt one below lives for the page.
+function subscribeStore(listener: () => void): () => void {
+  listeners.add(listener);
+
+  if (listeners.size === 1) {
     window.addEventListener("appinstalled", handleAppInstalled);
 
     // The display mode changes at runtime — entering or leaving
     // fullscreen, or launching the installed app from the same page.
-    const queries = DISPLAY_MODES.map((mode) =>
+    queries = DISPLAY_MODES.map((mode) =>
       window.matchMedia(`(display-mode: ${mode})`),
     );
 
@@ -189,27 +171,82 @@ export default function usePwa(): PwaData {
       subscribe(query, detect);
     }
 
-    return () => {
+    // Nothing was listening while no component was mounted.
+    detect();
+  }
+
+  return () => {
+    listeners.delete(listener);
+
+    if (listeners.size === 0) {
       window.removeEventListener("appinstalled", handleAppInstalled);
 
       for (const query of queries) {
         unsubscribe(query, detect);
       }
-    };
-  }, [discardEvent]);
 
-  // Detect PWA support
-  useEffect(() => {
-    if ("BeforeInstallPromptEvent" in window) {
-      setIsSupported(true);
+      queries = [];
     }
-  }, []);
+  };
+}
 
-  // Detect iOS, where installing is a manual gesture. Kept out of the
-  // first render so server and client markup agree.
-  useEffect(() => {
-    setIsIos(detectIos());
-  }, []);
+const getServerSnapshot = (): Snapshot => SERVER_SNAPSHOT;
+
+// Capture the event at module load time, before React hydrates: the
+// browser fires it once, often before any effect could listen.
+// preventDefault() suppresses the browser's own mini-infobar so the app
+// decides when to prompt. This is the package's import-time side effect.
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    capturedEvent = event;
+    update({ canInstall: true });
+  });
+}
+
+async function install(): Promise<UserChoice | undefined> {
+  const event = capturedEvent;
+
+  if (!event) {
+    return undefined;
+  }
+
+  let choice: UserChoice;
+
+  try {
+    await event.prompt();
+    choice = await event.userChoice;
+  } catch {
+    // The browser refuses a second `prompt()` on the same event. We keep
+    // the event after a dismissal (see below), so a caller that re-prompts
+    // without waiting for a fresh browser event lands here. Drop the spent
+    // event rather than surfacing a rejection.
+    if (capturedEvent === event) {
+      discardEvent();
+    }
+
+    return undefined;
+  }
+
+  // beforeinstallprompt is one-shot per page load: the same event cannot
+  // be prompted again after it resolves. We clear only on `accepted` so
+  // callers can re-prompt after a dismissal (the next genuine browser
+  // event replaces it).
+  if (choice.outcome === "accepted" && capturedEvent === event) {
+    discardEvent();
+  }
+
+  return choice;
+}
+
+export default function usePwa(): PwaData {
+  // On hydration React renders SERVER_SNAPSHOT first and then the real
+  // one, so server and client markup agree.
+  const { canInstall, isInstalled, isIos, isSupported } = useSyncExternalStore(
+    subscribeStore,
+    readSnapshot,
+    getServerSnapshot,
+  );
 
   return {
     canInstall,

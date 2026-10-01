@@ -274,21 +274,109 @@ describe("usePwa", () => {
       const { default: usePwa } = await import("../src/hooks/use-pwa");
       const count = (spy: typeof added, type: string): number =>
         spy.mock.calls.filter(([name]) => name === type).length;
-      const { unmount } = renderHook(() => usePwa());
 
-      expect(count(added, "beforeinstallprompt")).toBe(2);
+      expect(count(added, "beforeinstallprompt")).toBe(1);
+
+      const first = renderHook(() => usePwa());
+      const second = renderHook(() => usePwa());
+
+      // The store listens once, however many components read it.
+      expect(count(added, "beforeinstallprompt")).toBe(1);
       expect(count(added, "appinstalled")).toBe(1);
+
+      first.unmount();
+
+      expect(count(removed, "appinstalled")).toBe(0);
+
+      second.unmount();
+
       expect(count(removed, "beforeinstallprompt")).toBe(0);
-
-      unmount();
-
-      expect(count(removed, "beforeinstallprompt")).toBe(1);
       expect(count(removed, "appinstalled")).toBe(1);
     } finally {
       added.mockRestore();
       removed.mockRestore();
     }
   });
+
+  it("shares state, so installing from one component updates another", async () => {
+    const { default: usePwa } = await import("../src/hooks/use-pwa");
+    const button = renderHook(() => usePwa());
+    const banner = renderHook(() => usePwa());
+
+    act(() => {
+      fireBeforeInstallPrompt({ outcome: "accepted" });
+    });
+
+    expect(button.result.current.canInstall).toBe(true);
+    expect(banner.result.current.canInstall).toBe(true);
+
+    const choice = await act(() => button.result.current.install());
+
+    expect(choice).toEqual({ outcome: "accepted", platform: "web" });
+    expect(button.result.current.canInstall).toBe(false);
+    expect(banner.result.current.canInstall).toBe(false);
+  });
+
+  it("sees an event captured before the component mounted", async () => {
+    const { default: usePwa } = await import("../src/hooks/use-pwa");
+
+    fireBeforeInstallPrompt({ outcome: "accepted" });
+
+    const { result } = renderHook(() => usePwa());
+
+    expect(result.current.canInstall).toBe(true);
+  });
+
+  it("renders the not-yet-known values on the server", async () => {
+    setUserAgent(IPHONE_UA);
+    (window.navigator as { standalone?: boolean }).standalone = true;
+
+    const { default: usePwa } = await import("../src/hooks/use-pwa");
+    const { renderToString } = await import("react-dom/server");
+
+    function Probe() {
+      return <span>{JSON.stringify(usePwa())}</span>;
+    }
+
+    expect(renderToString(<Probe />)).toContain(
+      JSON.stringify({
+        canInstall: false,
+        isInstalled: false,
+        isSupported: false,
+        needsManualInstall: false,
+      }).replaceAll('"', "&quot;"),
+    );
+  });
+
+  it("hydrates without a mismatch, then reports the real state", async () => {
+    (window.navigator as { standalone?: boolean }).standalone = true;
+
+    const { default: usePwa } = await import("../src/hooks/use-pwa");
+    const { renderToString } = await import("react-dom/server");
+    const { hydrateRoot } = await import("react-dom/client");
+
+    function Probe() {
+      return <span>{String(usePwa().isInstalled)}</span>;
+    }
+
+    const container = document.createElement("div");
+
+    container.innerHTML = renderToString(<Probe />);
+    expect(container.textContent).toBe("false");
+
+    const errors: unknown[] = [];
+    const root = await act(async () =>
+      hydrateRoot(container, <Probe />, {
+        onRecoverableError: (error) => errors.push(error),
+      }),
+    );
+
+    expect(errors).toEqual([]);
+    expect(container.textContent).toBe("true");
+
+    act(() => root.unmount());
+  });
+
   it("asks for a manual install on iPhone", async () => {
     setUserAgent(IPHONE_UA);
 
