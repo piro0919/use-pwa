@@ -45,6 +45,7 @@ npm run build         # Build Next.js demo site (includes SW)
 npm run build:lib     # Build npm package with tsup
 npm run test          # Run Vitest
 npm run lint          # Biome check
+npm run check:package # publint + attw on the packed tarball (after build:lib)
 npm run format        # Biome format --write
 ```
 
