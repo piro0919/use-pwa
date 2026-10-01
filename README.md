@@ -10,6 +10,14 @@ Other PWA install hooks miss the `beforeinstallprompt` event when it fires befor
 
 > Note on iOS: `isSupported` is `false` because iOS does not expose `BeforeInstallPromptEvent`. "Add to Home Screen" there is a manual user gesture, not programmatic. Use `needsManualInstall` to show your own instructions instead of an install button. Since iOS 16.4 this covers Chrome, Edge, Firefox and DuckDuckGo too, not just Safari — but not in-app browsers such as Instagram or LINE, which report the same platform yet cannot add to the home screen.
 
+## Importing has a side effect
+
+Importing `use-pwa` — not calling the hook, just importing it — adds a `beforeinstallprompt` listener to `window` that stays for the life of the page. That is what lets it catch an event fired before React hydrates.
+
+The listener calls `event.preventDefault()`, which stops the browser from showing its own install mini-infobar (Chrome on Android). From then on the install prompt appears only when your code calls `install()`. If you want the browser's default UI, do not import this package on that page.
+
+The package declares `"sideEffects": true` so bundlers keep the listener even when the module is imported only for this effect.
+
 ## Installation
 
 ```bash
