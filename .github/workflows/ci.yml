@@ -36,7 +36,7 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 24.21.0
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:lib
@@ -95,7 +95,7 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 24.21.0
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm add -D react@${{ matrix.react }} react-dom@${{ matrix.react }}
