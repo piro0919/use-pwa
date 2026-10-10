@@ -14,6 +14,9 @@ importers:
       '@biomejs/biome':
         specifier: 2.5.15
         version: 2.5.15
+      '@piro0919/biome-config':
+        specifier: github:piro0919/biome-config#v1.0.0
+        version: https://codeload.github.com/piro0919/biome-config/tar.gz/0545bc1c5f5ff02a363cf1d0d84cf9a8c7c7b00f(@biomejs/biome@2.5.15)
       '@serwist/next':
         specifier: ^9.5.13
         version: 9.5.13(next@16.4.0(@types/node@25.9.9)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)(typescript@5.9.3)
@@ -629,6 +632,12 @@ packages:
 
   '@oxc-project/types@0.146.0':
     resolution: {integrity: sha512-XC0QsnnhVe7sLIWmYmdPw7x5P0h4W8vUU3Nv1ySgWXtvCz8NizoAEpGXA0sOYoJQV2Rl13LgURAHQ5cI5ILCSA==}
+
+  '@piro0919/biome-config@https://codeload.github.com/piro0919/biome-config/tar.gz/0545bc1c5f5ff02a363cf1d0d84cf9a8c7c7b00f':
+    resolution: {gitHosted: true, integrity: sha512-OlrQfCEtEBSZl20WAymwL+1nfiyaDNWUR9fQTndnM2am/UdkdwZPvS5UB0+TBoevvELWISSNMwP8ou4vzbw6iA==, tarball: https://codeload.github.com/piro0919/biome-config/tar.gz/0545bc1c5f5ff02a363cf1d0d84cf9a8c7c7b00f}
+    version: 1.0.0
+    peerDependencies:
+      '@biomejs/biome': ^2.1.0
 
   '@publint/pack@0.1.7':
     resolution: {integrity: sha512-4EDEmvxWtgsCnnVeBvtFIFZtUhPPt1+bA9JrSwU4Sa//6oKtzCSlGGXYJr44OD9aGISymbieJ4mCKHUygUDU+g==}
@@ -2371,6 +2380,10 @@ snapshots:
     optional: true
 
   '@oxc-project/types@0.146.0': {}
+
+  '@piro0919/biome-config@https://codeload.github.com/piro0919/biome-config/tar.gz/0545bc1c5f5ff02a363cf1d0d84cf9a8c7c7b00f(@biomejs/biome@2.5.15)':
+    dependencies:
+      '@biomejs/biome': 2.5.15
 
   '@publint/pack@0.1.7':
     dependencies:
