@@ -1,6 +1,21 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+// Each test re-imports the hook after resetting modules, so the probes take it
+// as a prop instead of closing over it. Defined here, not inside a test, so
+// React sees one stable component type.
+function JsonProbe({ useHook }: { useHook: () => unknown }) {
+  return <span>{JSON.stringify(useHook())}</span>;
+}
+
+function InstalledProbe({
+  useHook,
+}: {
+  useHook: () => { isInstalled: boolean };
+}) {
+  return <span>{String(useHook().isInstalled)}</span>;
+}
+
 beforeEach(() => {
   vi.resetModules();
   Object.defineProperty(document, "referrer", {
@@ -334,11 +349,7 @@ describe("usePwa", () => {
     const { default: usePwa } = await import("../src/hooks/use-pwa");
     const { renderToString } = await import("react-dom/server");
 
-    function Probe() {
-      return <span>{JSON.stringify(usePwa())}</span>;
-    }
-
-    expect(renderToString(<Probe />)).toContain(
+    expect(renderToString(<JsonProbe useHook={usePwa} />)).toContain(
       JSON.stringify({
         canInstall: false,
         isInstalled: false,
@@ -355,18 +366,14 @@ describe("usePwa", () => {
     const { renderToString } = await import("react-dom/server");
     const { hydrateRoot } = await import("react-dom/client");
 
-    function Probe() {
-      return <span>{String(usePwa().isInstalled)}</span>;
-    }
-
     const container = document.createElement("div");
 
-    container.innerHTML = renderToString(<Probe />);
+    container.innerHTML = renderToString(<InstalledProbe useHook={usePwa} />);
     expect(container.textContent).toBe("false");
 
     const errors: unknown[] = [];
     const root = await act(async () =>
-      hydrateRoot(container, <Probe />, {
+      hydrateRoot(container, <InstalledProbe useHook={usePwa} />, {
         onRecoverableError: (error) => errors.push(error),
       }),
     );
