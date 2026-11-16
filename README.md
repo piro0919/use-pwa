@@ -52,22 +52,22 @@ function App() {
 
 ### `usePwa(): PwaData`
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `canInstall` | `boolean` | `true` when install prompt is available |
-| `install` | `() => Promise<UserChoice \| undefined>` | Triggers the install prompt. Never rejects; resolves with `undefined` when no prompt is available |
-| `isInstalled` | `boolean` | `true` when running as installed PWA. Updates live, without a reload |
-| `isSupported` | `boolean` | `true` when browser supports PWA installation |
-| `needsManualInstall` | `boolean` | `true` when the platform can only install by hand — iOS and iPadOS. Mutually exclusive with `canInstall` |
+| Property             | Type                                     | Description                                                                                              |
+| -------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `canInstall`         | `boolean`                                | `true` when install prompt is available                                                                  |
+| `install`            | `() => Promise<UserChoice \| undefined>` | Triggers the install prompt. Never rejects; resolves with `undefined` when no prompt is available        |
+| `isInstalled`        | `boolean`                                | `true` when running as installed PWA. Updates live, without a reload                                     |
+| `isSupported`        | `boolean`                                | `true` when browser supports PWA installation                                                            |
+| `needsManualInstall` | `boolean`                                | `true` when the platform can only install by hand — iOS and iPadOS. Mutually exclusive with `canInstall` |
 
 ### `UserChoice`
 
 Returned by `install()` when the user responds to the prompt:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `outcome` | `"accepted" \| "dismissed"` | User's choice |
-| `platform` | `string` | Platform string |
+| Property   | Type                        | Description     |
+| ---------- | --------------------------- | --------------- |
+| `outcome`  | `"accepted" \| "dismissed"` | User's choice   |
+| `platform` | `string`                    | Platform string |
 
 ## Features
 

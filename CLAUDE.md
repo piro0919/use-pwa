@@ -56,13 +56,13 @@ const { canInstall, install, isInstalled, isSupported, needsManualInstall } =
   usePwa();
 ```
 
-| Property      | Type                                    | Description                                                                 |
-| ------------- | --------------------------------------- | --------------------------------------------------------------------------- |
-| `canInstall`  | `boolean`                               | Browser has fired `beforeinstallprompt`; calling `install()` is meaningful. |
-| `install`     | `() => Promise<UserChoice \| undefined>` | Triggers the native install prompt. Resolves with the user's choice.        |
-| `isInstalled` | `boolean`                               | The page is currently running as an installed PWA.                          |
-| `isSupported` | `boolean`                               | `BeforeInstallPromptEvent` is available in this browser.                    |
-| `needsManualInstall` | `boolean`                        | Installing is only possible by hand — iOS/iPadOS. Never true alongside `canInstall` or `isInstalled`. |
+| Property             | Type                                     | Description                                                                                           |
+| -------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `canInstall`         | `boolean`                                | Browser has fired `beforeinstallprompt`; calling `install()` is meaningful.                           |
+| `install`            | `() => Promise<UserChoice \| undefined>` | Triggers the native install prompt. Resolves with the user's choice.                                  |
+| `isInstalled`        | `boolean`                                | The page is currently running as an installed PWA.                                                    |
+| `isSupported`        | `boolean`                                | `BeforeInstallPromptEvent` is available in this browser.                                              |
+| `needsManualInstall` | `boolean`                                | Installing is only possible by hand — iOS/iPadOS. Never true alongside `canInstall` or `isInstalled`. |
 
 `UserChoice = { outcome: "accepted" \| "dismissed"; platform: string }`.
 
