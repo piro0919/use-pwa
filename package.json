@@ -6,7 +6,7 @@
   "description": "React hook for PWA installation detection and handling",
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
-    "@biomejs/biome": "2.6.7",
+    "@biomejs/biome": "2.6.8",
     "@piro0919/biome-config": "github:piro0919/biome-config#v1.1.0",
     "@serwist/next": "^9.5.13",
     "@testing-library/react": "^16.3.3",
