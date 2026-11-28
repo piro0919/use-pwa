@@ -195,8 +195,8 @@ importers:
         specifier: github:piro0919/biome-config#v1.1.0
         version: https://codeload.github.com/piro0919/biome-config/tar.gz/53ee91794d4e1db45d0c53b46e8e8fac6ffd0691(@biomejs/biome@2.6.9)
       '@serwist/next':
-        specifier: ^9.5.15
-        version: 9.5.15(next@16.4.6(@types/node@25.9.10)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)(typescript@5.9.3)
+        specifier: ^9.6.0
+        version: 9.6.0(next@16.4.6(@types/node@25.9.10)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)(typescript@5.9.3)
       '@testing-library/react':
         specifier: ^16.3.3
         version: 16.3.3(@testing-library/dom@10.4.2)(@types/react-dom@19.3.0(@types/react@19.3.3))(@types/react@19.3.3)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -234,8 +234,8 @@ importers:
         specifier: 19.3.1
         version: 19.3.1(react@19.3.1)
       serwist:
-        specifier: ^9.5.15
-        version: 9.5.15(browserslist@4.29.5)(typescript@5.9.3)
+        specifier: ^9.6.0
+        version: 9.6.0(browserslist@4.29.5)(typescript@5.9.3)
       tsup:
         specifier: ^9.0.0
         version: 9.0.0(postcss@8.5.33)(typescript@5.9.3)
@@ -1036,8 +1036,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@serwist/build@9.5.15':
-    resolution: {integrity: sha512-NnRRuYDKA5nwyM63g9TvwQqC+adPirQgzEviSmiXoVgs6fpRk4BfekUAuqGj5WLOvHhnYSJ8TnQyqByiEgKljQ==}
+  '@serwist/build@9.6.0':
+    resolution: {integrity: sha512-I+PTTYsR5JVH8VczXnPmIoRi24MXpg2ApKps4GCFg48vhcQ2n2TAvpQpiMrksf5f9AgvBzIjp8y5aYlkFEk27A==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       typescript: '>=5.0.0'
@@ -1045,11 +1045,11 @@ packages:
       typescript:
         optional: true
 
-  '@serwist/next@9.5.15':
-    resolution: {integrity: sha512-z5jUbIT4LdQl3OV3qeTXV9gVnOXTxPguOeLHOMeqferP0xrrZjcDL+gNn62tfMa7qT0WwGoqBx0JNHd3rxWQAg==}
+  '@serwist/next@9.6.0':
+    resolution: {integrity: sha512-vBTKQCxD2KnV7vkG4+yQrJFTX0eIMRAjJ5GHyfwd46t4AGqwFKRN74LNmFpAPHxnZYLFfmzWG7gC+txG7X88WA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      '@serwist/cli': ^9.5.15
+      '@serwist/cli': ^9.6.0
       next: '>=14.0.0'
       react: '>=18.0.0'
       typescript: '>=5.0.0'
@@ -1059,16 +1059,16 @@ packages:
       typescript:
         optional: true
 
-  '@serwist/utils@9.5.15':
-    resolution: {integrity: sha512-JhSSoiAfADr1Sn+zc9pdWjPL9WBqNe/3A99nkLj3yJRioqhR/p5WQovc1gJiDpptzAEJzB4qfFOObT0tsGf8Yw==}
+  '@serwist/utils@9.6.0':
+    resolution: {integrity: sha512-e4HdJE4tEeaaBh2ODOLIvqvb1aep2CZxJloah4puLAgx7l4jMwJutdr6zk3RmWbP12mJKjPMsGC28nWxHUtRAw==}
     peerDependencies:
       browserslist: '>=4'
     peerDependenciesMeta:
       browserslist:
         optional: true
 
-  '@serwist/webpack-plugin@9.5.15':
-    resolution: {integrity: sha512-uKQKQFscbOAXnQwGsT5P6A5gQaxH7EbDN0/O8s/sGENU6fXKKdBok3t8yWXB8zzas2uuhvURfi/bx85NOQIZhw==}
+  '@serwist/webpack-plugin@9.6.0':
+    resolution: {integrity: sha512-jtG23PLUOGmM58GklgmgChcDqapSFjHgnPqT/T+Lx3IE8j5mnrPJfJJJYFqHzkw3UMe/tx7VGtYimza7pxErVw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       typescript: '>=5.0.0'
@@ -1079,8 +1079,8 @@ packages:
       webpack:
         optional: true
 
-  '@serwist/window@9.5.15':
-    resolution: {integrity: sha512-OIfXK68StLcAP0eYxEQg5YtjhITdsijMsVmxuDyQL6+uIgXyY6eUAt2lvrKQcOIGbiX2Kma/nTYncWoLh0WjuA==}
+  '@serwist/window@9.6.0':
+    resolution: {integrity: sha512-7PKU0fCHZaug+O7a3TiKokH39VqVJRMpEduHIwZKNGXHbls3udh23D0l/yXpbhFVIsz/e8L7sZ7DIwZfeD95Hg==}
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
@@ -1824,8 +1824,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  serwist@9.5.15:
-    resolution: {integrity: sha512-k//vx8zoecklv5d3KIIq1afVJOn91uhyj/k/9loEsAETHw/v3o3W7WdTnBrMGgJHZjC6OHPpOSgENprkROiFQw==}
+  serwist@9.6.0:
+    resolution: {integrity: sha512-uCKap2fCpZ+y30dcO1b3Z9BpStPjFaehWgH32msBy0rOvjBuGzDbb9mydH/oasd+B9LcFuEaGGcdhlDhZPIoYA==}
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
@@ -2619,9 +2619,9 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.68.3':
     optional: true
 
-  '@serwist/build@9.5.15(browserslist@4.29.5)(typescript@5.9.3)':
+  '@serwist/build@9.6.0(browserslist@4.29.5)(typescript@5.9.3)':
     dependencies:
-      '@serwist/utils': 9.5.15(browserslist@4.29.5)
+      '@serwist/utils': 9.6.0(browserslist@4.29.5)
       common-tags: 1.8.2
       glob: 14.0.6
       pretty-bytes: 6.1.1
@@ -2633,33 +2633,33 @@ snapshots:
     transitivePeerDependencies:
       - browserslist
 
-  '@serwist/next@9.5.15(next@16.4.6(@types/node@25.9.10)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)(typescript@5.9.3)':
+  '@serwist/next@9.6.0(next@16.4.6(@types/node@25.9.10)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)(typescript@5.9.3)':
     dependencies:
-      '@serwist/build': 9.5.15(browserslist@4.29.5)(typescript@5.9.3)
-      '@serwist/utils': 9.5.15(browserslist@4.29.5)
-      '@serwist/webpack-plugin': 9.5.15(browserslist@4.29.5)(typescript@5.9.3)
-      '@serwist/window': 9.5.15(browserslist@4.29.5)(typescript@5.9.3)
+      '@serwist/build': 9.6.0(browserslist@4.29.5)(typescript@5.9.3)
+      '@serwist/utils': 9.6.0(browserslist@4.29.5)
+      '@serwist/webpack-plugin': 9.6.0(browserslist@4.29.5)(typescript@5.9.3)
+      '@serwist/window': 9.6.0(browserslist@4.29.5)(typescript@5.9.3)
       browserslist: 4.29.5
       glob: 14.0.6
       kolorist: 1.8.0
       next: 16.4.6(@types/node@25.9.10)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react: 19.3.1
       semver: 7.8.5
-      serwist: 9.5.15(browserslist@4.29.5)(typescript@5.9.3)
+      serwist: 9.6.0(browserslist@4.29.5)(typescript@5.9.3)
       zod: 4.6.7
     optionalDependencies:
       typescript: 5.9.3
     transitivePeerDependencies:
       - webpack
 
-  '@serwist/utils@9.5.15(browserslist@4.29.5)':
+  '@serwist/utils@9.6.0(browserslist@4.29.5)':
     optionalDependencies:
       browserslist: 4.29.5
 
-  '@serwist/webpack-plugin@9.5.15(browserslist@4.29.5)(typescript@5.9.3)':
+  '@serwist/webpack-plugin@9.6.0(browserslist@4.29.5)(typescript@5.9.3)':
     dependencies:
-      '@serwist/build': 9.5.15(browserslist@4.29.5)(typescript@5.9.3)
-      '@serwist/utils': 9.5.15(browserslist@4.29.5)
+      '@serwist/build': 9.6.0(browserslist@4.29.5)(typescript@5.9.3)
+      '@serwist/utils': 9.6.0(browserslist@4.29.5)
       pretty-bytes: 6.1.1
       zod: 4.6.7
     optionalDependencies:
@@ -2667,10 +2667,10 @@ snapshots:
     transitivePeerDependencies:
       - browserslist
 
-  '@serwist/window@9.5.15(browserslist@4.29.5)(typescript@5.9.3)':
+  '@serwist/window@9.6.0(browserslist@4.29.5)(typescript@5.9.3)':
     dependencies:
       '@types/trusted-types': 2.0.7
-      serwist: 9.5.15(browserslist@4.29.5)(typescript@5.9.3)
+      serwist: 9.6.0(browserslist@4.29.5)(typescript@5.9.3)
     optionalDependencies:
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -3354,9 +3354,9 @@ snapshots:
 
   semver@7.8.6: {}
 
-  serwist@9.5.15(browserslist@4.29.5)(typescript@5.9.3):
+  serwist@9.6.0(browserslist@4.29.5)(typescript@5.9.3):
     dependencies:
-      '@serwist/utils': 9.5.15(browserslist@4.29.5)
+      '@serwist/utils': 9.6.0(browserslist@4.29.5)
       idb: 8.0.3
     optionalDependencies:
       typescript: 5.9.3
